@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "react-router-dom": "^7.13.2"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite build"
+  }
+}
