@@ -4,18 +4,23 @@
 
 ## Live Demo
 
+https://2026-s1-o1a.github.io/hf-information-portal/
+
 ## Workflow Guide
 
 ### 1. Clone the repo
 
-````git clone https://github.com/2026-s1-o1a/hf-information-portal.git
-cd hf-information-portal```
-````
+```bash
+git clone https://github.com/2026-s1-o1a/hf-information-portal.git
+cd hf-information-portal
+```
 
 ### 2. Install dependencies and run dev server
 
-`npm install`
-`npm run dev`
+```bash
+npm install
+npm run dev
+```
 
 ### 3. GitHub workflow
 
@@ -27,16 +32,16 @@ git pull origin main
 git checkout -b feature/your-feature-name
 ```
 
-Open a Pull Request (PR)
-Go to GitHub
-Open a Pull Request from your branch → main
-Add a clear description of your changes
-Ensure your code works locally
+Open a Pull Request (PR)  
+Go to GitHub  
+Open a Pull Request from your branch → main  
+Add a clear description of your changes  
+Ensure your code works locally  
 Merge into main
 
-#### Important Notes:
+### Important Notes:
 
-Do NOT push directly to main
-Always work on a separate branch
-Keep commits clear and meaningful
+Do NOT push directly to main  
+Always work on a separate branch  
+Keep commits clear and meaningful  
 Pull latest changes before starting new work
