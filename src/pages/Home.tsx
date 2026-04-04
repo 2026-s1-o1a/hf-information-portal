@@ -1,4 +1,4 @@
 function Home() {
-  return <div>Home</div>
+  return <div>Heart Failure Information Portal</div>
 }
 export default Home
