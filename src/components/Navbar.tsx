@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './Navbar.css'
 import { FiMenu, FiSearch } from 'react-icons/fi'
 import logo from '../assets/logo.png'
