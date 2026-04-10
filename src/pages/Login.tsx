@@ -2,19 +2,19 @@ import styles from './Register.module.css'
 
 function Login() {
   return (
-    <div className={styles['register-container']}>
-      <div className={styles['register-card']}>
+    <div className={styles.registerContainer}>
+      <div className={styles.registerCard}>
         <h2>Sign in</h2>
-        <div className={styles['register-form']}>
-          <div className={styles['form-group']}>
+        <div className={styles.registerForm}>
+          <div className={styles.formGroup}>
             <label>Email</label>
             <input type="email" placeholder="Enter your email" />
           </div>
-          <div className={styles['form-group']}>
+          <div className={styles.formGroup}>
             <label>Password</label>
             <input type="password" placeholder="Enter your password" />
           </div>
-          <button className={styles['register-btn']}>Log in</button>
+          <button className={styles.registerBtn}>Log in</button>
         </div>
       </div>
     </div>

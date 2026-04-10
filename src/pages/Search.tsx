@@ -27,23 +27,24 @@ function Search() {
   }
 
   return (
-    <div className={styles['search-container']}>
-      <div className={styles['search-card']}>
+    <div className={styles.searchContainer}>
+      <div className={styles.searchCard}>
         <h2>Search</h2>
-        <div className={styles['search-form']}>
-          <div className={styles['search-group']}>
+
+        <div className={styles.searchForm}>
+          <div className={styles.searchGroup}>
             <input
               type="text"
               placeholder="Search..."
-              className={styles['search-input']}
+              className={styles.searchInput}
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
             />
           </div>
 
-          <div className={styles['search-group']}>
+          <div className={styles.searchGroup}>
             <select
-              className={styles['search-select']}
+              className={styles.searchSelect}
               value={type}
               onChange={e => setType(e.target.value)}
             >
@@ -54,7 +55,7 @@ function Search() {
             </select>
 
             <select
-              className={styles['search-select']}
+              className={styles.searchSelect}
               value={date}
               onChange={e => setDate(e.target.value)}
             >
@@ -64,7 +65,7 @@ function Search() {
             </select>
 
             <select
-              className={styles['search-select']}
+              className={styles.searchSelect}
               value={sort}
               onChange={e => setSort(e.target.value)}
             >
@@ -73,11 +74,11 @@ function Search() {
             </select>
           </div>
 
-          <button className={styles['search-btn']} onClick={handleSearch}>
+          <button className={styles.searchBtn} onClick={handleSearch}>
             Search
           </button>
 
-          <div className={styles['results-group']}>
+          <div className={styles.resultsGroup}>
             {results.length === 0 ? (
               <p>No results found</p>
             ) : (

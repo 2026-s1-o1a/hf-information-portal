@@ -1,11 +1,11 @@
-.search-container {
+.searchContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-.search-card {
+.searchCard {
   background-color: #3f49a5;
   padding: 2rem;
   border-radius: 8px;
@@ -14,43 +14,41 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.search-card h2 {
+.searchCard h2 {
   margin-bottom: 1.5rem;
   text-align: center;
 }
 
-.search-input {
+.searchForm {
+}
+
+.searchInput {
   width: 100%;
   padding: 0.6rem 0.8rem;
   border-radius: 6px;
-  border: 2px solid #797da5; /* matches button base color */
-  background-color: #c5d3d8; /* same as existing input bg */
+  border: 2px solid #797da5;
+  background-color: #c5d3d8;
   color: white;
   font-size: 1rem;
   outline: none;
   box-sizing: border-box;
 }
 
-.search-input:focus {
-  border-color: #0056b3; /* like button hover color */
+.searchInput:focus {
+  border-color: #0056b3;
   box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
 }
 
-.results-group input {
+.searchSelect {
   padding: 0.6rem 0.8rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #444;
   background-color: #c5d3d8;
   color: white;
   font-size: 1rem;
 }
 
-.results-group input:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-.search-btn {
+.searchBtn {
   width: 100%;
   padding: 0.7rem;
   margin-top: 0.5rem;
@@ -62,17 +60,16 @@
   cursor: pointer;
 }
 
-.search-btn:hover {
+.searchBtn:hover {
   background-color: #0056b3;
 }
 
-.search-group {
+.searchGroup {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
 }
 
-.search-group label {
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
+.resultsGroup {
+  margin-top: 1rem;
 }
