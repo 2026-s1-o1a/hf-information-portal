@@ -1,34 +1,43 @@
 import { Route, Navigate, Routes } from 'react-router-dom'
+import { useState } from 'react'
+
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Search from './pages/Search'
 import Login from './pages/Login'
+
 import './Theme.css'
 
+export type User = {
+  email: string
+  username: string
+  password: string
+}
+
 function App() {
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('user')
+    return storedUser ? JSON.parse(storedUser) : null
+  })
+
   return (
     <div>
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
+
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
 
-      <div className="content-container">
-        <div className="content-header">
-          <h2>Guidelines</h2>
-        </div>
-        <div className="content-body">
-          <h3>Latest Guidelines</h3>
-          <p>Get information on the latest guidelines here.</p>
-        </div>
-      </div>
+        <Route path="/register" element={<Register setUser={setUser} />} />
+        <Route path="/login" element={<Login setUser={setUser} />} />
+
+        <Route
+          path="/profile"
+          element={user ? <Profile user={user} /> : <Navigate to="/login" />}
+        />
+      </Routes>
     </div>
   )
 }

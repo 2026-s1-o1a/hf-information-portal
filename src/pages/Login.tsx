@@ -1,20 +1,71 @@
 import styles from './Register.module.css'
 
-function Login() {
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { Dispatch, SetStateAction } from 'react'
+import type { User } from '../App'
+
+type Props = {
+  setUser: Dispatch<SetStateAction<User | null>>
+}
+
+function Login({ setUser }: Props) {
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleLogin = () => {
+    const storedUser = localStorage.getItem('user')
+
+    if (!storedUser) {
+      alert('No user found, please register first')
+      return
+    }
+
+    const parsedUser: User = JSON.parse(storedUser)
+
+    if (parsedUser.email === email && parsedUser.password === password) {
+      setUser(parsedUser)
+      navigate('/profile')
+    } else {
+      alert('Invalid credentials')
+    }
+  }
+
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
         <h2>Sign in</h2>
+
         <div className={styles.registerForm}>
           <div className={styles.formGroup}>
             <label>Email</label>
-            <input type="email" placeholder="Enter your email" />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
           </div>
+
           <div className={styles.formGroup}>
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
           </div>
-          <button className={styles.registerBtn}>Log in</button>
+
+          <button className={styles.registerBtn} onClick={handleLogin}>
+            Log in
+          </button>
+
+          <button className={styles.registerBtn} onClick={() => navigate('/register')}>
+            Sign Up
+          </button>
         </div>
       </div>
     </div>

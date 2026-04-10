@@ -1,9 +1,25 @@
 // import { Link } from 'react-router-dom'
-import styles from './Navbar.module.css'
-import { FiMenu, FiSearch } from 'react-icons/fi'
-import logo from '../assets/logo.png'
+import type { User } from '../App'
+import type { Dispatch, SetStateAction } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
-function Navbar() {
+import styles from './Navbar.module.css'
+import logo from '../assets/logo.png'
+import { FiMenu, FiSearch } from 'react-icons/fi'
+
+type Props = {
+  user: User | null
+  setUser: Dispatch<SetStateAction<User | null>>
+}
+
+function Navbar({ user, setUser }: Props) {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    setUser(null)
+    navigate('/login')
+  }
   return (
     <div className={styles.navbar}>
       <div className={styles.navbarLeft}>
@@ -23,16 +39,26 @@ function Navbar() {
           News and Events
         </a>
         <div className={styles.searchBar}>
-          <FiMenu className={styles.icon} />
-
-          <input type="text" placeholder="Search" className={styles.input} />
-
-          <FiSearch className={styles.icon} />
-        </div>
+          {' '}
+          <FiMenu className={styles.icon} />{' '}
+          <input type="text" placeholder="Search" className={styles.searchInput} />{' '}
+          <FiSearch className={styles.icon} />{' '}
+        </div>{' '}
       </div>
 
       <div className={styles.navbarRight}>
-        <button className={styles.signin}>Sign In</button>
+        {user ? (
+          <>
+            <span>Hi, {user.username}</span>
+            <button className={styles.signin} onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link to="/login">
+            <button className={styles.signin}>Join us</button>
+          </Link>
+        )}
       </div>
     </div>
   )
