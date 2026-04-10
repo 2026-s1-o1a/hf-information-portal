@@ -1,6 +1,3 @@
-import { Route, Navigate, Routes } from 'react-router-dom'
-import { useState } from 'react'
-
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
@@ -9,6 +6,9 @@ import Search from './pages/Search'
 import Login from './pages/Login'
 
 import './Theme.css'
+
+import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
+import { useState } from 'react'
 
 export type User = {
   email: string
@@ -22,9 +22,13 @@ function App() {
     return storedUser ? JSON.parse(storedUser) : null
   })
 
+  const location = useLocation()
+
+  const hideNavbarRoutes = ['/login', '/register']
+
   return (
     <div>
-      <Navbar user={user} setUser={setUser} />
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={setUser} />}
 
       <Routes>
         <Route path="/" element={<Home />} />
