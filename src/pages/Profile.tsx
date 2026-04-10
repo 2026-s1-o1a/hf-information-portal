@@ -1,7 +1,13 @@
 import styles from './Profile.module.css'
 import logo from '../assets/logo.png'
 
-function Profile() {
+import type { User } from '../App'
+
+type Props = {
+  user: User
+}
+
+function Profile({ user }: Props) {
   return (
     <div className={styles.page}>
       {/* LEFT SIDEBAR */}
@@ -16,26 +22,18 @@ function Profile() {
           <li>Settings</li>
           <li>Dashboard</li>
         </ul>
+
         <div className={styles.logout}>Logout</div>
       </div>
 
       {/* MAIN CONTENT */}
       <div className={styles.content}>
-        {/* FORM SECTION */}
         <div className={styles.formSection}>
           <div className={styles.formFields}>
             <div className={styles.field}>
-              <label>First Name:</label>
+              <label>Username</label>
               <div className={styles.inputRow}>
-                <input type="text" defaultValue="John" />
-                <span className={styles.editIcon}>🖍</span>
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label>Last Name:</label>
-              <div className={styles.inputRow}>
-                <input type="text" defaultValue="Doe" />
+                <input type="text" value={user.username} readOnly />
                 <span className={styles.editIcon}>🖍</span>
               </div>
             </div>
@@ -43,15 +41,15 @@ function Profile() {
             <div className={styles.field}>
               <label>Email Address</label>
               <div className={styles.inputRow}>
-                <input type="email" defaultValue="johndoe01@gmail.com" />
+                <input type="email" value={user.email} readOnly />
                 <span className={styles.editIcon}>🖍</span>
               </div>
             </div>
 
             <div className={styles.field}>
-              <label>Phone Number</label>
+              <label>Password</label>
               <div className={styles.inputRow}>
-                <input type="text" defaultValue="04xx xxx xxx" />
+                <input type="password" value={user.password} readOnly />
                 <span className={styles.editIcon}>🖍</span>
               </div>
             </div>
