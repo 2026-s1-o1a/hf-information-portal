@@ -31,6 +31,7 @@ npm run dev
 Always create a new branch from `main` before starting work:
 
 ```bash
+git fetch orgin
 git checkout main
 git pull origin main
 git checkout -b feature/your-feature-name
