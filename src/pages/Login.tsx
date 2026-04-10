@@ -1,7 +1,7 @@
 import styles from './Register.module.css'
 
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '../App'
 
