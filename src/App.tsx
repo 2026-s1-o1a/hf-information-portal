@@ -1,4 +1,3 @@
-// import { useState } from 'react'
 import { Route, Navigate, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
@@ -20,17 +19,16 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-     </Routes>
-     
-     <div className='content-container'>
-      <div className='content-header'>
-        <h2>Guidelines</h2>
+
+      <div className="content-container">
+        <div className="content-header">
+          <h2>Guidelines</h2>
+        </div>
+        <div className="content-body">
+          <h3>Latest Guidelines</h3>
+          <p>Get information on the latest guidelines here.</p>
+        </div>
       </div>
-      <div className='content-body'>
-        <h3>Latest Guidelines</h3>
-        <p>Get information on the latest guidelines here.</p>
-      </div>
-     </div>
     </div>
   )
 }
