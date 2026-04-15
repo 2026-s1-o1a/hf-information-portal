@@ -50,6 +50,10 @@ Open a Pull Request (PR):
 - Keep commits clear and meaningful
 - Pull latest changes before starting new work
 
-## Team Contact
+## Team Member
 
-![alt text](Team_Contact.png)
+Casey Faggion
+Jack Klenke
+Thanh Nguyen
+Christopher Yim
+Peter Trinh
