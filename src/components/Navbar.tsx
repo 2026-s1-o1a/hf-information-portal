@@ -49,7 +49,9 @@ function Navbar({ user, setUser }: Props) {
       <div className={styles.navbarRight}>
         {user ? (
           <>
-            <span>Hi, {user.username}</span>
+            <span>
+              Hi, {user.username} ({user.role})
+            </span>
             <button className={styles.signin} onClick={handleLogout}>
               Logout
             </button>

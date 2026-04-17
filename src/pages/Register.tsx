@@ -23,7 +23,12 @@ function Register({ setUser }: Props) {
       return
     }
 
-    const newUser: User = { email, username, password }
+    const newUser: User = {
+      email,
+      username,
+      password,
+      role: email.includes('admin') ? 'custodian' : 'user',
+    }
 
     localStorage.setItem('user', JSON.stringify(newUser))
     setUser(newUser)

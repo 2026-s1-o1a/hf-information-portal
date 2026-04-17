@@ -1,16 +1,25 @@
-function Home() {
+import type { User } from '../App'
+
+type Props = {
+  user: User | null
+}
+
+function Home({ user }: Props) {
   return (
     <div>
-      <div>Heart Failure Information Portal</div>
+      <h2>Heart Failure Information Portal</h2>
 
-      <div className="content-container">
-        <div className="content-header">
-          <h2>Guidelines</h2>
-        </div>
-        <div className="content-body">
-          <h3>Latest Guidelines</h3>
-          <p>Get information on the latest guidelines here.</p>
-        </div>
+      <div>
+        <h3>Guidelines</h3>
+        <p>Latest guidelines content...</p>
+
+        {/* ONLY FOR CUSTODIAN */}
+        {user?.role === 'custodian' && (
+          <div style={{ marginTop: '20px' }}>
+            <button>Add Content</button>
+            <button>Edit Content</button>
+          </div>
+        )}
       </div>
     </div>
   )

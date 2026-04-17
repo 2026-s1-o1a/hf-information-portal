@@ -14,6 +14,7 @@ export type User = {
   email: string
   username: string
   password: string
+  role: 'user' | 'custodian'
 }
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={setUser} />}
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home user={user} />} />
         <Route path="/search" element={<Search />} />
 
         <Route path="/register" element={<Register setUser={setUser} />} />
