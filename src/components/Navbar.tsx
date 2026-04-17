@@ -16,8 +16,9 @@ function Navbar({ user, setUser }: Props) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
+    localStorage.removeItem('currentUser')
     setUser(null)
-    navigate('/login')
+    navigate('/')
   }
 
   return (

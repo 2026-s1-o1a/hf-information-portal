@@ -1,6 +1,7 @@
 import styles from './Profile.module.css'
 import logo from '../assets/logo.png'
 
+import { useState } from 'react'
 import type { User } from '../App'
 
 type Props = {
@@ -8,6 +9,30 @@ type Props = {
 }
 
 function Profile({ user }: Props) {
+  // load all users (DB REPLACE later)
+  const [users, setUsers] = useState<User[]>(() => {
+    return JSON.parse(localStorage.getItem('users') || '[]')
+  })
+
+  // admin role update function
+  const updateUserRole = (email: string, role: User['role']) => {
+    const updatedUsers = users.map(u => (u.email === email ? { ...u, role } : u))
+
+    setUsers(updatedUsers)
+
+    // DB REPLACE:
+    // PATCH /users/:id
+    localStorage.setItem('users', JSON.stringify(updatedUsers))
+
+    // update current session if needed
+    const current = JSON.parse(localStorage.getItem('currentUser') || 'null')
+
+    if (current && current.email === email) {
+      const updatedCurrent = { ...current, role }
+      localStorage.setItem('currentUser', JSON.stringify(updatedCurrent))
+    }
+  }
+
   return (
     <div className={styles.page}>
       {/* LEFT SIDEBAR */}
@@ -59,6 +84,44 @@ function Profile({ user }: Props) {
             <img src={logo} alt="avatar" className={styles.avatar} />
           </div>
         </div>
+
+        {/* ADMIN PANEL */}
+        {user.role === 'admin' && (
+          <div style={{ marginTop: '30px' }}>
+            <h3>Admin Panel — Manage Users</h3>
+
+            {users.map(u => (
+              <div
+                key={u.email}
+                style={{
+                  border: '1px solid #ccc',
+                  padding: '10px',
+                  marginBottom: '10px',
+                }}
+              >
+                <p>
+                  {u.email} — <b>{u.role}</b>
+                </p>
+
+                {/* promote from user */}
+                {u.role === 'user' && (
+                  <>
+                    <button onClick={() => updateUserRole(u.email, 'doctor')}>Make Doctor</button>
+
+                    <button onClick={() => updateUserRole(u.email, 'custodian')}>
+                      Make Custodian
+                    </button>
+                  </>
+                )}
+
+                {/* revert */}
+                {u.role !== 'user' && u.role !== 'admin' && (
+                  <button onClick={() => updateUserRole(u.email, 'user')}>Revert to User</button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

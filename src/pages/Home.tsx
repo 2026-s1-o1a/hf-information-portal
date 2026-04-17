@@ -6,69 +6,79 @@ type Props = {
   setUser: (u: User) => void
 }
 
+type Role = 'user' | 'doctor' | 'custodian' | 'admin'
+
+const roleLabels: Record<Role, string> = {
+  user: 'Everyone',
+  doctor: 'Doctors',
+  custodian: 'Custodians',
+  admin: 'Admins',
+}
+
 type Content = {
   id: number
   title: string
   type: 'article' | 'survey'
-  targetRoles: string[]
-  commentRoles: string[]
+  targetRole: Role
+  commentRole: Role | 'none'
 }
 
-function Home({ user, setUser }: Props) {
+function Home({ user }: Props) {
   const [contents, setContents] = useState<Content[]>(() => {
-    // DB REPLACE:
-    // GET /contents
     const stored = localStorage.getItem('contents')
     return stored ? JSON.parse(stored) : []
   })
 
   const [newTitle, setNewTitle] = useState('')
-  const [targetRoles, setTargetRoles] = useState<string[]>([])
+  const [targetRole, setTargetRole] = useState<Role | ''>('')
+  const [commentRole, setCommentRole] = useState<Role | 'none'>('none')
+
+  const roleLevel: Record<Role, number> = {
+    user: 1,
+    doctor: 2,
+    custodian: 3,
+    admin: 4,
+  }
 
   const handleAddContent = () => {
     if (!newTitle) return
+    if (!targetRole) {
+      alert('Please select target role')
+      return
+    }
 
     const newContent: Content = {
-      id: Date.now(), // DB REPLACE: backend will generate ID
+      id: Date.now(),
       title: newTitle,
       type: 'survey',
-      targetRoles: targetRoles.length ? targetRoles : ['user'],
-      commentRoles: targetRoles.length ? targetRoles : ['user'],
+      targetRole,
+      commentRole,
     }
 
     const updated = [...contents, newContent]
 
     setContents(updated)
-
-    // DB REPLACE:
-    // POST /contents
     localStorage.setItem('contents', JSON.stringify(updated))
 
+    // reset everything
     setNewTitle('')
-    setTargetRoles([])
+    setTargetRole('')
+    setCommentRole('none')
   }
 
-  const toggleRole = (role: string) => {
-    setTargetRoles(prev => (prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]))
-  }
+  const getCommentOptions = () => {
+    if (!targetRole) return []
 
-  const handleVerifyDoctor = () => {
-    if (!user) return
+    const levels: Role[] = ['user', 'doctor']
 
-    const updated: User = { ...user, role: 'doctor' }
-    // DB REPLACE:
-    // update role via API (e.g. PATCH /users/:id)
-    localStorage.setItem('currentUser', JSON.stringify(updated))
-
-    setUser(updated)
+    return levels.filter(r => roleLevel[r] >= roleLevel[targetRole])
   }
 
   return (
     <div style={{ padding: '20px' }}>
       <h2>HF Portal</h2>
 
-      {user?.role === 'custodian' && <button onClick={handleVerifyDoctor}>Verify as Doctor</button>}
-
+      {/* ONLY custodian can create content */}
       {user?.role === 'custodian' && (
         <div>
           <input
@@ -77,16 +87,43 @@ function Home({ user, setUser }: Props) {
             placeholder="Survey title"
           />
 
+          {/* TARGET */}
           <div>
-            <label>
-              <input type="checkbox" onChange={() => toggleRole('user')} />
-              User
-            </label>
+            <label>Audience:</label>
+            <select
+              value={targetRole}
+              onChange={e => {
+                const newTarget = e.target.value as Role
+                setTargetRole(newTarget)
 
-            <label>
-              <input type="checkbox" onChange={() => toggleRole('doctor')} />
-              Doctor
-            </label>
+                // reset invalid commentRole when target changes
+                if (commentRole !== 'none' && roleLevel[commentRole] < roleLevel[newTarget]) {
+                  setCommentRole('none')
+                }
+              }}
+            >
+              <option value="">Select</option>
+              <option value="user">{roleLabels.user}</option>
+              <option value="doctor">{roleLabels.doctor}</option>
+            </select>
+          </div>
+
+          {/* COMMENT CONTROL */}
+          <div>
+            <label>Who can comment?</label>
+
+            <select
+              value={commentRole}
+              onChange={e => setCommentRole(e.target.value as Role | 'none')}
+            >
+              <option value="none">No one</option>
+
+              {getCommentOptions().map(role => (
+                <option key={role} value={role}>
+                  {roleLabels[role]}
+                </option>
+              ))}
+            </select>
           </div>
 
           <button onClick={handleAddContent}>Add Survey</button>
@@ -94,14 +131,20 @@ function Home({ user, setUser }: Props) {
       )}
 
       {contents
-        .filter(c => user && (user.role === 'custodian' || c.targetRoles.includes(user.role)))
+        .filter(c => {
+          if (!user) return c.targetRole === 'user'
+          if (user.role === 'admin') return true
+
+          return roleLevel[user.role] >= roleLevel[c.targetRole]
+        })
         .map(c => (
           <div key={c.id} style={{ border: '1px solid', margin: 10 }}>
             <h3>{c.title}</h3>
 
-            {/* DB REPLACE (optional future):
-                comments would come from backend */}
-            {user?.role === 'custodian' || c.commentRoles.includes(user?.role || '') ? (
+            {user &&
+            (user.role === 'admin' ||
+              user.role === 'custodian' ||
+              (c.commentRole !== 'none' && roleLevel[user.role] >= roleLevel[c.commentRole])) ? (
               <textarea placeholder="Comment..." />
             ) : (
               <p>No permission to comment</p>

@@ -16,17 +16,12 @@ function Login({ setUser }: Props) {
   const [password, setPassword] = useState('')
 
   const handleLogin = () => {
-    // DB REPLACE:
-    // localStorage users → POST /login
     const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
 
     const foundUser = users.find(u => u.email === email && u.password === password)
 
     if (foundUser) {
-      // DB REPLACE:
-      // backend will return user + session/token
       localStorage.setItem('currentUser', JSON.stringify(foundUser))
-
       setUser(foundUser)
       navigate('/')
     } else {

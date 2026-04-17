@@ -27,11 +27,11 @@ function Register({ setUser }: Props) {
       email,
       username,
       password,
-      role: email.includes('admin') ? 'custodian' : 'user',
+      // 🔥 ONLY admin gets admin
+      role: email === 'admin@gmail.com' ? 'admin' : 'user',
     }
 
-    // DB REPLACE:
-    // POST /register
+    // DB REPLACE
     const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
 
     if (users.find(u => u.email === email)) {
@@ -42,9 +42,6 @@ function Register({ setUser }: Props) {
     const updatedUsers = [...users, newUser]
 
     localStorage.setItem('users', JSON.stringify(updatedUsers))
-
-    // DB REPLACE:
-    // backend would auto login / return token
     localStorage.setItem('currentUser', JSON.stringify(newUser))
 
     setUser(newUser)
@@ -59,39 +56,23 @@ function Register({ setUser }: Props) {
         <div className={styles.registerForm}>
           <div className={styles.formGroup}>
             <label>Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
           </div>
 
           <div className={styles.formGroup}>
             <label>Username</label>
-            <input
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-            />
+            <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
           </div>
 
           <div className={styles.formGroup}>
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
 
           <div className={styles.formGroup}>
             <label>Confirm Password</label>
             <input
               type="password"
-              placeholder="Confirm your password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
             />

@@ -13,14 +13,13 @@ import { useState } from 'react'
 export type User = {
   email: string
   username: string
-  password: string // DB: this will be removed (handled by backend)
-  role: 'user' | 'custodian' | 'doctor'
+  password: string // DB: remove later
+  role: 'user' | 'doctor' | 'custodian' | 'admin'
 }
 
 function App() {
   const [user, setUser] = useState<User | null>(() => {
-    // DB REPLACE:
-    // check session / token / API
+    // DB REPLACE
     const storedUser = localStorage.getItem('currentUser')
     return storedUser ? JSON.parse(storedUser) : null
   })
