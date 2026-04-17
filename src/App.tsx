@@ -13,17 +13,19 @@ import { useState } from 'react'
 export type User = {
   email: string
   username: string
-  password: string
+  password: string // DB: this will be removed (handled by backend)
+  role: 'user' | 'custodian' | 'doctor'
 }
 
 function App() {
   const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('user')
+    // DB REPLACE:
+    // check session / token / API
+    const storedUser = localStorage.getItem('currentUser')
     return storedUser ? JSON.parse(storedUser) : null
   })
 
   const location = useLocation()
-
   const hideNavbarRoutes = ['/login', '/register']
 
   return (
@@ -31,9 +33,8 @@ function App() {
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={setUser} />}
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home user={user} setUser={setUser} />} />
         <Route path="/search" element={<Search />} />
-
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
 
