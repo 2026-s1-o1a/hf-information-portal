@@ -16,15 +16,17 @@ function Navbar({ user, setUser }: Props) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    localStorage.removeItem('user')
     setUser(null)
     navigate('/login')
   }
+
   return (
     <div className={styles.navbar}>
       <div className={styles.navbarLeft}>
-        <img src={logo} alt="logo" className={styles.logo} />
-        <span className={styles.title}>HF Portal</span>
+        <Link to="/" className={styles.logoLink}>
+          <img src={logo} alt="logo" className={styles.logo} />
+          <span className={styles.title}>HF Portal</span>
+        </Link>
       </div>
 
       <div className={styles.navbarCenter}>
@@ -49,9 +51,11 @@ function Navbar({ user, setUser }: Props) {
       <div className={styles.navbarRight}>
         {user ? (
           <>
-            <span>
-              Hi, {user.username} ({user.role})
-            </span>
+            <Link to="/profile">
+              <span>
+                Hi, {user.username} ({user.role})
+              </span>
+            </Link>
             <button className={styles.signin} onClick={handleLogout}>
               Logout
             </button>

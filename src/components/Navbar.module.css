@@ -27,6 +27,10 @@
   font-size: 30px;
 }
 
+.logoLink:hover {
+  opacity: 100%;
+}
+
 /* ===== Center ===== */
 .navbarCenter {
   display: flex;

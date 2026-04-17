@@ -30,10 +30,25 @@ function Register({ setUser }: Props) {
       role: email.includes('admin') ? 'custodian' : 'user',
     }
 
-    localStorage.setItem('user', JSON.stringify(newUser))
-    setUser(newUser)
+    // DB REPLACE:
+    // POST /register
+    const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
 
-    navigate('/profile')
+    if (users.find(u => u.email === email)) {
+      alert('User already exists')
+      return
+    }
+
+    const updatedUsers = [...users, newUser]
+
+    localStorage.setItem('users', JSON.stringify(updatedUsers))
+
+    // DB REPLACE:
+    // backend would auto login / return token
+    localStorage.setItem('currentUser', JSON.stringify(newUser))
+
+    setUser(newUser)
+    navigate('/')
   }
 
   return (

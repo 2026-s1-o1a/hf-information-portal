@@ -16,18 +16,19 @@ function Login({ setUser }: Props) {
   const [password, setPassword] = useState('')
 
   const handleLogin = () => {
-    const storedUser = localStorage.getItem('user')
+    // DB REPLACE:
+    // localStorage users → POST /login
+    const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
 
-    if (!storedUser) {
-      alert('No user found, please register first')
-      return
-    }
+    const foundUser = users.find(u => u.email === email && u.password === password)
 
-    const parsedUser: User = JSON.parse(storedUser)
+    if (foundUser) {
+      // DB REPLACE:
+      // backend will return user + session/token
+      localStorage.setItem('currentUser', JSON.stringify(foundUser))
 
-    if (parsedUser.email === email && parsedUser.password === password) {
-      setUser(parsedUser)
-      navigate('/profile')
+      setUser(foundUser)
+      navigate('/')
     } else {
       alert('Invalid credentials')
     }
