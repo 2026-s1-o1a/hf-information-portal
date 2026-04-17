@@ -23,8 +23,10 @@ function Navbar({ user, setUser }: Props) {
   return (
     <div className={styles.navbar}>
       <div className={styles.navbarLeft}>
-        <img src={logo} alt="logo" className={styles.logo} />
-        <span className={styles.title}>HF Portal</span>
+        <Link to="/" className={styles.logoLink}>
+          <img src={logo} alt="logo" className={styles.logo} />
+          <span className={styles.title}>HF Portal</span>
+        </Link>
       </div>
 
       <div className={styles.navbarCenter}>
