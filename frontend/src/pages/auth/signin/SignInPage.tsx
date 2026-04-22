@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import SignUpForm from "../signup/SignUpForm";
+import SignInForm from "./SignInForm";
 
 interface SignupPageProps {
   loadUserProfile: () => void;
@@ -9,7 +9,7 @@ function SignupPage({ loadUserProfile }: SignupPageProps) {
 
   return (
     <>
-      <SignUpForm loadUserProfile={loadUserProfile} />
+      <SignInForm loadUserProfile={loadUserProfile} />
       <br />
       <Link to="/signup">Don't have an account sign-up here!</Link>
     </>
