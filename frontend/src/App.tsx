@@ -1,13 +1,13 @@
-import Navbar from './components/Navbar'
 import Home from './pages/home/Home'
-import Profile from './pages/profile/Profile'
 import SignUpPage from './pages/auth/signup/SignUpPage'
-import Search from './pages/search/Search'
 import SignInPage from './pages/auth/signin/SignInPage'
+import Profile from './pages/profile/Profile'
+import Search from './pages/search/Search'
+
 
 import './Theme.css'
 
-import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
+import { Route, Navigate, Routes } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 

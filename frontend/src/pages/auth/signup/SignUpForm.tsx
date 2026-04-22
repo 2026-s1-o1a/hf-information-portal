@@ -37,7 +37,7 @@ function SignUpForm({ loadUserProfile }: SignUpFormProps) {
       if (response.data.success) {
         console.log('Sign-up successful');
         await loadUserProfile()
-        navigate('/home');
+        navigate('/');
       } else {
         alert('Sign-up failed');
       }

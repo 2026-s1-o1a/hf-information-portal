@@ -35,7 +35,7 @@ function SignInForm({ loadUserProfile }: SignInFormProps) {
       if (response.data.success) {
         console.log('Sign-in successful');
         await loadUserProfile();
-        navigate('/home');
+        navigate('/');
       } else {
         alert('Sign-in failed');
       }

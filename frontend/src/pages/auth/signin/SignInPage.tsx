@@ -11,6 +11,8 @@ function SignupPage({ loadUserProfile }: SignupPageProps) {
     <>
       <SignInForm loadUserProfile={loadUserProfile} />
       <br />
+      <br />
+      <br />
       <Link to="/signup">Don't have an account sign-up here!</Link>
     </>
   );
