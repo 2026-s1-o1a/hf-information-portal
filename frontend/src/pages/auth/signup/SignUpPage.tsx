@@ -14,6 +14,7 @@ function SignupPage({ loadUserProfile }: SignupPageProps) {
       <br />
       <br />
        <Link to="/signin">Already have an account? sign-in here!</Link>
+       <Link to="/">Go home!</Link>
     </>
   );
 };
