@@ -1,8 +1,8 @@
 import Navbar from './components/Navbar'
-import Home from './pages/Home'
-import Profile from './pages/Profile'
+import Home from './pages/home/Home'
+import Profile from './pages/profile/Profile'
 import SignUpPage from './pages/auth/signup/SignUpPage'
-import Search from './pages/Search'
+import Search from './pages/search/Search'
 import SignInPage from './pages/auth/signin/SignInPage'
 
 import './Theme.css'

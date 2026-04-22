@@ -1,8 +1,8 @@
 import styles from './Profile.module.css'
-import logo from '../assets/logo.png'
+import logo from '../../assets/logo.png'
 
 import { useState } from 'react'
-import type { User } from '../App'
+import type { User } from '../../App'
 
 type Props = {
   user: User
