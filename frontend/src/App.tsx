@@ -11,12 +11,12 @@ import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-export type User = {
-  email: string
-  username: string
-  password: string // DB: remove later
-  role: 'user' | 'doctor' | 'custodian' | 'admin'
-}
+// export type User = {
+//   email: string
+//   username: string
+//   password: string // DB: remove later
+//   role: 'user' | 'doctor' | 'custodian' | 'admin'
+// }
 
 function App() {
 
@@ -41,14 +41,14 @@ function App() {
 
   return (
     <div>
-      {/* {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={null} />} */}
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home user={user} setUser={setUser} />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/register" element={<SignUpPage loadUserProfile={loadUserProfile} />} />
-        <Route path="/login" element={<SignInPage loadUserProfile={loadUserProfile} />} />
+        <Route path="/signup" element={<SignUpPage loadUserProfile={loadUserProfile} />} />
+        <Route path="/signin" element={<SignInPage loadUserProfile={loadUserProfile} />} />
 
+        <Route path="/search" element={<Search />} />
         <Route
           path="/profile"
           element={user ? <Profile user={user} /> : <Navigate to="/login" />}

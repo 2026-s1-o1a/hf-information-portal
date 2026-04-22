@@ -1,5 +1,5 @@
 // import { Link } from 'react-router-dom'
-import type { User } from '../App'
+// import type { User } from '../App'
 import type { Dispatch, SetStateAction } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -7,12 +7,12 @@ import styles from './Navbar.module.css'
 import logo from '../assets/logo.png'
 import { FiMenu, FiSearch } from 'react-icons/fi'
 
-type Props = {
-  user: User | null
-  setUser: Dispatch<SetStateAction<User | null>>
-}
+// type Props = {
+//   user: User | null
+//   setUser: Dispatch<SetStateAction<User | null>>
+// }
 
-function Navbar({ user, setUser }: Props) {
+function Navbar() {
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -50,7 +50,10 @@ function Navbar({ user, setUser }: Props) {
       </div>
 
       <div className={styles.navbarRight}>
-        {user ? (
+          <Link to="/signin">
+            <button className={styles.signin}>Join us</button>
+          </Link>
+        {/* {user ? (
           <>
             <Link to="/profile">
               <span>
@@ -62,10 +65,8 @@ function Navbar({ user, setUser }: Props) {
             </button>
           </>
         ) : (
-          <Link to="/login">
-            <button className={styles.signin}>Join us</button>
-          </Link>
-        )}
+        
+        )} */}
       </div>
     </div>
   )
