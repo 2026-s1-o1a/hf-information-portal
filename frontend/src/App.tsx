@@ -1,9 +1,9 @@
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
-import Register from './pages/Register'
+import SignUpPage from './pages/auth/signup/SignUpPage'
 import Search from './pages/Search'
-import Login from './pages/Login'
+import SignInPage from './pages/auth/signin/SignInPage'
 
 import './Theme.css'
 
@@ -34,8 +34,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home user={user} setUser={setUser} />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/register" element={<Register setUser={setUser} />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/register" element={<SignUpPage setUser={setUser} />} />
+        <Route path="/login" element={<SignInPage setUser={setUser} />} />
 
         <Route
           path="/profile"

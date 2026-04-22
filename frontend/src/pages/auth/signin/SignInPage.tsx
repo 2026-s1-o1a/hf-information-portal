@@ -1,15 +1,15 @@
-import styles from './Register.module.css'
+import styles from "../auth.module.css";
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Dispatch, SetStateAction } from 'react'
-import type { User } from '../App'
+import type { User } from '../../../App'
 
 type Props = {
   setUser: Dispatch<SetStateAction<User | null>>
 }
 
-function Login({ setUser }: Props) {
+function SignInPage({ setUser }: Props) {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -30,11 +30,11 @@ function Login({ setUser }: Props) {
   }
 
   return (
-    <div className={styles.registerContainer}>
-      <div className={styles.registerCard}>
+    <div className={styles.authContainer}>
+      <div className={styles.authCard}>
         <h2>Sign in</h2>
 
-        <div className={styles.registerForm}>
+        <div className={styles.authForm}>
           <div className={styles.formGroup}>
             <label>Email</label>
             <input
@@ -55,11 +55,11 @@ function Login({ setUser }: Props) {
             />
           </div>
 
-          <button className={styles.registerBtn} onClick={handleLogin}>
+          <button className={styles.authBtn} onClick={handleLogin}>
             Log in
           </button>
 
-          <button className={styles.registerBtn} onClick={() => navigate('/register')}>
+          <button className={styles.authBtn} onClick={() => navigate('/register')}>
             Sign Up
           </button>
         </div>
@@ -68,4 +68,4 @@ function Login({ setUser }: Props) {
   )
 }
 
-export default Login
+export default SignInPage

@@ -1,15 +1,15 @@
-import styles from './Register.module.css'
+import styles from "../auth.module.css";
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Dispatch, SetStateAction } from 'react'
-import type { User } from '../App'
+import type { User } from '../../../App'
 
 type Props = {
   setUser: Dispatch<SetStateAction<User | null>>
 }
 
-function Register({ setUser }: Props) {
+function SignUpPage({ setUser }: Props) {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -49,11 +49,11 @@ function Register({ setUser }: Props) {
   }
 
   return (
-    <div className={styles.registerContainer}>
-      <div className={styles.registerCard}>
+    <div className={styles.authContainer}>
+      <div className={styles.authCard}>
         <h2>Create Account</h2>
 
-        <div className={styles.registerForm}>
+        <div className={styles.authForm}>
           <div className={styles.formGroup}>
             <label>Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
@@ -78,7 +78,7 @@ function Register({ setUser }: Props) {
             />
           </div>
 
-          <button className={styles.registerBtn} onClick={handleRegister}>
+          <button className={styles.authBtn} onClick={handleRegister}>
             Create Account
           </button>
         </div>
@@ -87,4 +87,4 @@ function Register({ setUser }: Props) {
   )
 }
 
-export default Register
+export default SignUpPage
