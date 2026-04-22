@@ -79,7 +79,7 @@ function Home({ user }: Props) {
     
     <div style={{ padding: '20px' }}>
       <Navbar />
-      <h2>HF Portal</h2>
+      <h2>Heart Portal</h2>
 
       {/* ONLY custodian can create content */}
       {user?.role === 'custodian' && (

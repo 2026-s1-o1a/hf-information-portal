@@ -1,32 +1,17 @@
-// import { Link } from 'react-router-dom'
-// import type { User } from '../App'
-import type { Dispatch, SetStateAction } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link  } from 'react-router-dom'
 
 import styles from './Navbar.module.css'
 import logo from '../assets/logo.png'
 import { FiMenu, FiSearch } from 'react-icons/fi'
 
-// type Props = {
-//   user: User | null
-//   setUser: Dispatch<SetStateAction<User | null>>
-// }
-
 function Navbar() {
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser')
-    setUser(null)
-    navigate('/')
-  }
 
   return (
     <div className={styles.navbar}>
       <div className={styles.navbarLeft}>
         <Link to="/" className={styles.logoLink}>
-          <img src={logo} alt="logo" className={styles.logo} />
-          <span className={styles.title}>HF Portal</span>
+          {/* LOGO <img src={logo} alt="logo" className={styles.logo} /> */}
+          <span className={styles.title}>Heart Failure Information Portal</span>
         </Link>
       </div>
 
@@ -51,22 +36,11 @@ function Navbar() {
 
       <div className={styles.navbarRight}>
           <Link to="/signin">
-            <button className={styles.signin}>Join us</button>
+            <button className={styles.signin}>Sign In</button>
           </Link>
-        {/* {user ? (
-          <>
-            <Link to="/profile">
-              <span>
-                Hi, {user.username} ({user.role})
-              </span>
-            </Link>
-            <button className={styles.signin} onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        ) : (
-        
-        )} */}
+          <Link to="/signup">
+            <button className={styles.signin}>Sign Up</button>
+          </Link>
       </div>
     </div>
   )
