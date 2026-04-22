@@ -8,7 +8,8 @@ import SignInPage from './pages/auth/signin/SignInPage'
 import './Theme.css'
 
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export type User = {
   email: string
@@ -18,24 +19,35 @@ export type User = {
 }
 
 function App() {
-  const [user, setUser] = useState<User | null>(() => {
-    // DB REPLACE
-    const storedUser = localStorage.getItem('currentUser')
-    return storedUser ? JSON.parse(storedUser) : null
-  })
 
-  const location = useLocation()
-  const hideNavbarRoutes = ['/login', '/register']
+  const [user, setUser] = useState(null);
+
+  const loadUserProfile = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/auth/me', {
+        withCredentials: true, // Ensure cookies are sent along with the request
+      });
+
+      setUser(response.data);
+
+    } catch (error) {
+      console.error('Error fetching user', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
 
   return (
     <div>
-      {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={setUser} />}
+      {/* {!hideNavbarRoutes.includes(location.pathname) && <Navbar user={user} setUser={null} />} */}
 
       <Routes>
         <Route path="/" element={<Home user={user} setUser={setUser} />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/register" element={<SignUpPage setUser={setUser} />} />
-        <Route path="/login" element={<SignInPage setUser={setUser} />} />
+        <Route path="/register" element={<SignUpPage loadUserProfile={loadUserProfile} />} />
+        <Route path="/login" element={<SignInPage loadUserProfile={loadUserProfile} />} />
 
         <Route
           path="/profile"
