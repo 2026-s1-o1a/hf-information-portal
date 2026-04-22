@@ -41,7 +41,6 @@ function App() {
 
   return (
     <div>
-      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home user={user} setUser={setUser} />} />

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { User } from '../App'
+import Navbar from '../../components/Navbar'
 
 type Props = {
   user: User | null
@@ -75,7 +76,9 @@ function Home({ user }: Props) {
   }
 
   return (
+    
     <div style={{ padding: '20px' }}>
+      <Navbar />
       <h2>HF Portal</h2>
 
       {/* ONLY custodian can create content */}
