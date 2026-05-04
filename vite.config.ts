@@ -6,4 +6,13 @@ export default defineConfig({
     base: process.env.NODE_ENV === 'production'
     ? '/hf-information-portal/'
     : '/',
+  server: {
+    proxy: {
+      '/umbraco': {
+        target: 'http://localhost:58609',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  }
 })

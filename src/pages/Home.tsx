@@ -1,3 +1,5 @@
+import PostList from './PostList';
+
 function Home() {
   return (
     <div>
@@ -10,6 +12,7 @@ function Home() {
         <div className="content-body">
           <h3>Latest Guidelines</h3>
           <p>Get information on the latest guidelines here.</p>
+          <PostList />
         </div>
       </div>
     </div>
