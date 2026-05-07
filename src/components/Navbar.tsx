@@ -41,6 +41,26 @@ function Navbar({ user, setUser }: Props) {
         <a href="https://ceih.sa.gov.au/news-and-events" target="_blank" rel="noopener noreferrer">
           News and Events
         </a>
+          {user?.role == 'admin' ? (
+          <>
+            <Link to="/AdminOnly">
+              <span>
+                Admin Dashboard
+              </span>
+            </Link>
+          </>
+        ) : <></>
+        }
+          {user?.role == 'doctor' ? (
+          <>
+            <Link to="/ClinicianOnly">
+              <span>
+                Clinician Dashboard
+              </span>
+            </Link>
+          </>
+        ) : <></>
+        }
         <div className={styles.searchBar}>
           {' '}
           <FiMenu className={styles.icon} />{' '}
