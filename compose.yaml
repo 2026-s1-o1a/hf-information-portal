@@ -1,0 +1,64 @@
+services:
+  hf_client:
+    image: node:22-alpine
+    container_name: hf_client
+    working_dir: /client
+    command: npm run dev -- --host 0.0.0.0
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    depends_on:
+      - hf_server
+    # environment:
+    #   - VITE_API_URL=http://localhost:8080
+    
+  hf_server:
+    image: hf_server:latest
+    container_name: hf_server
+    working_dir: /app
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+      # Required for local Docker login. OpenIddict blocks HTTP by default.
+      # DO NOT use this in Production (handled by SSL/Reverse Proxy).
+      - Umbraco__CMS__Global__UseHttps=false
+      - Umbraco__CMS__Hosting__LocalhostOnly=true
+    ports:
+      - "8080:8080"
+    depends_on:
+      - hf_db
+
+
+# Command to connect to the SQL Server container and run sqlcmd:
+# docker exec -it 0e6302574830 /opt/mssql-tool18s/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -C
+  hf_db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hf_db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+  
+  # This sidecar container will initialize the database after a delay to ensure SQL Server is ready.
+  db_init_sidecar:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - hf_db
+    entrypoint: >
+      bash -c "
+      sleep 30;
+      /opt/mssql-tools/bin/sqlcmd -S hf_db -U sa -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE hf_information'"
+    
+volumes:
+  sql_data:
