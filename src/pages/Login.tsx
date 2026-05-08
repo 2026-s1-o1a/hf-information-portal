@@ -20,23 +20,35 @@ function Login({ setUser }: Props) {
 
     const foundUser = users.find(u => u.email === email && u.password === password)
 
-    if (foundUser) {
-      localStorage.setItem('currentUser', JSON.stringify(foundUser))
-      setUser(foundUser)
-      navigate('/')
-    } else {
-      alert('Invalid credentials')
+    if (!foundUser) {
+      alert('User not found')
+      return
     }
+
+    localStorage.setItem('currentUser', JSON.stringify(foundUser))
+
+    setUser(foundUser)
+
+    if (foundUser.verificationStatus === 'pending') {
+      alert('Your verification request is on pending')
+    }
+
+    if (foundUser.verificationStatus === 'rejected') {
+      alert('Your verification request has been rejected')
+    }
+
+    navigate('/')
   }
 
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
-        <h2>Sign in</h2>
+        <h2>Sign In</h2>
 
         <div className={styles.registerForm}>
           <div className={styles.formGroup}>
             <label>Email</label>
+
             <input
               type="email"
               placeholder="Enter your email"
@@ -47,20 +59,21 @@ function Login({ setUser }: Props) {
 
           <div className={styles.formGroup}>
             <label>Password</label>
+
             <input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Confirm your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
           </div>
 
           <button className={styles.registerBtn} onClick={handleLogin}>
-            Log in
+            Log In
           </button>
-
+          <p>Don't have an account?</p>
           <button className={styles.registerBtn} onClick={() => navigate('/register')}>
-            Sign Up
+            Create one
           </button>
         </div>
       </div>

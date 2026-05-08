@@ -1,8 +1,8 @@
 /* ===== Global Theme ===== */
 
 :root {
-  --primary: #d8dded;
-  --primary-dark: #a2a8e5;
+  --primary: #e1e5f5;
+  --primary-dark: #aaafda;
   --secondary: #868ca6;
   --secondary-dark: #686e82;
   --background: #f5f6f8; /* page background */
@@ -13,7 +13,7 @@
   --text-secondary: #555555; /* grey text */
   --text-light: #ffffff; /* white */
 
-  --content-header: #D8DDED
+  --content-header: #d8dded;
 }
 /* Reset */
 
@@ -30,7 +30,7 @@ body {
 
 /* ===Content Container=== */
 .content-container {
-  border: 1px solid rgba(0,0,0,50%);
+  border: 1px solid rgba(0, 0, 0, 50%);
   border-radius: 20px;
   width: fit-content;
 }
