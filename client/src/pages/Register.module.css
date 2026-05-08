@@ -1,0 +1,110 @@
+.registerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+  min-height: 100vh;
+  background-color: var(--primary);
+}
+
+.registerCard {
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  color: var(--text-main);
+}
+
+.registerCard h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 790;
+}
+
+.registerForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1.2rem;
+}
+
+.formGroup label {
+  margin-bottom: 0.45rem;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  background-color: var(--primary);
+  color: var(--text-main);
+  box-shadow: 0 4px 6px -3px rgba(0, 0, 0, 0.3);
+
+  font-size: 1rem;
+  width: 100%;
+  max-width: 500px;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  background-color: var(--surface);
+}
+
+.registerBtn {
+  width: 40%;
+  padding: 0.85rem;
+
+  margin-top: 0.6rem;
+  margin-bottom: 3rem;
+
+  border: none;
+  border-radius: 6px;
+
+  background-color: var(--primary-dark);
+
+  color: var(--text-main);
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.registerBtn:hover {
+  background-color: var(--primary);
+}
+
+.registerBtn:active {
+  transform: scale(0.98);
+}
+
+.link {
+  width: 100%;
+}
