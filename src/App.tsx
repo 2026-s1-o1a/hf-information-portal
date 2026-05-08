@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import './Theme.css'
 
 import { Route, Navigate, Routes, useLocation } from 'react-router-dom'
+
 import { useState } from 'react'
 
 export type User = {
@@ -20,13 +21,15 @@ export type User = {
 
   role: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian' | 'admin'
 
-  requestedRole?: 'patient' | 'clinician' | 'doctor' | 'pharmacy'
+  requestedRole?: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian'
 
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected'
 
   verificationData?: {
     ahpraNumber?: string
-    workplace?: string
+
+    organisation?: string
+
     workEmail?: string
 
     pharmacyName?: string

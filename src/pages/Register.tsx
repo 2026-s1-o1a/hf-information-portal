@@ -9,7 +9,7 @@ type Props = {
   setUser: Dispatch<SetStateAction<User | null>>
 }
 
-type Role = 'patient' | 'clinician' | 'doctor' | 'pharmacy'
+type Role = 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian'
 
 function Register({ setUser }: Props) {
   const navigate = useNavigate()
@@ -23,7 +23,7 @@ function Register({ setUser }: Props) {
   const [requestedRole, setRequestedRole] = useState<Role>('patient')
 
   const [ahpraNumber, setAhpraNumber] = useState('')
-  const [workplace, setWorkplace] = useState('')
+  const [organisation, setOrganisation] = useState('')
   const [workEmail, setWorkEmail] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
 
@@ -51,15 +51,19 @@ function Register({ setUser }: Props) {
 
     let verificationData = {}
 
-    if (requestedRole === 'doctor' || requestedRole === 'clinician') {
-      if (!ahpraNumber || !workplace || !workEmail || !phoneNumber) {
+    if (
+      requestedRole === 'doctor' ||
+      requestedRole === 'clinician' ||
+      requestedRole === 'custodian'
+    ) {
+      if (!ahpraNumber || !organisation || !workEmail || !phoneNumber) {
         alert('Please complete verification details')
         return
       }
 
       verificationData = {
         ahpraNumber,
-        workplace,
+        organisation,
         workEmail,
         phoneNumber,
       }
@@ -177,19 +181,28 @@ function Register({ setUser }: Props) {
 
             <select value={requestedRole} onChange={e => setRequestedRole(e.target.value as Role)}>
               <option value="patient">Patient</option>
+
               <option value="clinician">Clinician</option>
+
               <option value="doctor">Doctor</option>
+
               <option value="pharmacy">Pharmacy</option>
+
+              <option value="custodian">Content Custodian</option>
             </select>
           </div>
 
-          {(requestedRole === 'doctor' || requestedRole === 'clinician') && (
+          {(requestedRole === 'doctor' ||
+            requestedRole === 'clinician' ||
+            requestedRole === 'custodian') && (
             <>
               <div className={styles.formGroup}>
-                <label>AHPRA Number</label>
+                <label>{requestedRole === 'custodian' ? 'Employee ID' : 'AHPRA Number'}</label>
 
                 <input
-                  placeholder="Enter AHPRA number"
+                  placeholder={
+                    requestedRole === 'custodian' ? 'Enter employee ID' : 'Enter AHPRA number'
+                  }
                   type="text"
                   value={ahpraNumber}
                   onChange={e => setAhpraNumber(e.target.value)}
@@ -197,13 +210,13 @@ function Register({ setUser }: Props) {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Organisation</label>
+                <label>Organisation Name</label>
 
                 <input
-                  placeholder="Enter your organisation"
+                  placeholder="Enter organisation name"
                   type="text"
-                  value={workplace}
-                  onChange={e => setWorkplace(e.target.value)}
+                  value={organisation}
+                  onChange={e => setOrganisation(e.target.value)}
                 />
               </div>
 
@@ -211,7 +224,7 @@ function Register({ setUser }: Props) {
                 <label>Organisation Email</label>
 
                 <input
-                  placeholder="Enter your organisation email"
+                  placeholder="Enter organisation email"
                   type="email"
                   value={workEmail}
                   onChange={e => setWorkEmail(e.target.value)}
@@ -222,7 +235,7 @@ function Register({ setUser }: Props) {
                 <label>Organisation Phone Number</label>
 
                 <input
-                  placeholder="Enter your organisation phone number"
+                  placeholder="Enter organisation phone number"
                   type="text"
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
@@ -237,6 +250,7 @@ function Register({ setUser }: Props) {
                 <label>Pharmacy Name</label>
 
                 <input
+                  placeholder="Enter pharmacy name"
                   type="text"
                   value={pharmacyName}
                   onChange={e => setPharmacyName(e.target.value)}
@@ -247,6 +261,7 @@ function Register({ setUser }: Props) {
                 <label>Pharmacy Address</label>
 
                 <input
+                  placeholder="Enter pharmacy address"
                   type="text"
                   value={pharmacyAddress}
                   onChange={e => setPharmacyAddress(e.target.value)}
@@ -257,6 +272,7 @@ function Register({ setUser }: Props) {
                 <label>License Number</label>
 
                 <input
+                  placeholder="Enter license number"
                   type="text"
                   value={licenseNumber}
                   onChange={e => setLicenseNumber(e.target.value)}
@@ -264,9 +280,10 @@ function Register({ setUser }: Props) {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Phone Number</label>
+                <label>Organisation Phone Number</label>
 
                 <input
+                  placeholder="Enter organisation phone number"
                   type="text"
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
@@ -278,9 +295,11 @@ function Register({ setUser }: Props) {
           <button className={styles.registerBtn} onClick={handleRegister}>
             Create Account
           </button>
+
           <p>Already have an account?</p>
+
           <button className={styles.registerBtn} onClick={() => navigate('/login')}>
-            Return to login
+            Return to Login
           </button>
         </div>
       </div>

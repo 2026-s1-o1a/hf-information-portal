@@ -2,7 +2,9 @@ import styles from './Register.module.css'
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import type { Dispatch, SetStateAction } from 'react'
+
 import type { User } from '../App'
 
 type Props = {
@@ -30,7 +32,7 @@ function Login({ setUser }: Props) {
     setUser(foundUser)
 
     if (foundUser.verificationStatus === 'pending') {
-      alert('Your verification request is on pending')
+      alert('Your verification request is currently pending admin approval')
     }
 
     if (foundUser.verificationStatus === 'rejected') {
@@ -43,7 +45,7 @@ function Login({ setUser }: Props) {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
-        <h2>Log In</h2>
+        <h2>LOG IN</h2>
 
         <div className={styles.registerForm}>
           <div className={styles.formGroup}>
@@ -71,9 +73,11 @@ function Login({ setUser }: Props) {
           <button className={styles.registerBtn} onClick={handleLogin}>
             Log In
           </button>
+
           <p>Don't have an account?</p>
+
           <button className={styles.registerBtn} onClick={() => navigate('/register')}>
-            Create one
+            Create One
           </button>
         </div>
       </div>
