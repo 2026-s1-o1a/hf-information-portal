@@ -14,8 +14,6 @@ services:
       - /client/node_modules
     depends_on:
       - hf_server
-    # environment:
-    #   - VITE_API_URL=http://localhost:8080
     
   hf_server:
     image: hf_server:latest
@@ -35,6 +33,11 @@ services:
     depends_on:
       - hf_db
 
+# To connect Umbraco to the SQL Server, use the following connection information:
+# Server address: hf_db
+# Database name: hf_information
+# Username: sa
+# Password: YourStrong!Passw0rd
 
 # Command to connect to the SQL Server container and run sqlcmd:
 # docker exec -it 0e6302574830 /opt/mssql-tool18s/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -C
