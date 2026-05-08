@@ -12,19 +12,40 @@ import { useState } from 'react'
 
 export type User = {
   email: string
-  username: string
-  password: string // DB: remove later
-  role: 'user' | 'doctor' | 'custodian' | 'admin'
+
+  firstName: string
+  lastName: string
+
+  password: string
+
+  role: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian' | 'admin'
+
+  requestedRole?: 'patient' | 'clinician' | 'doctor' | 'pharmacy'
+
+  verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected'
+
+  verificationData?: {
+    ahpraNumber?: string
+    workplace?: string
+    workEmail?: string
+
+    pharmacyName?: string
+    pharmacyAddress?: string
+    licenseNumber?: string
+
+    phoneNumber?: string
+  }
 }
 
 function App() {
   const [user, setUser] = useState<User | null>(() => {
-    // DB REPLACE
     const storedUser = localStorage.getItem('currentUser')
+
     return storedUser ? JSON.parse(storedUser) : null
   })
 
   const location = useLocation()
+
   const hideNavbarRoutes = ['/login', '/register']
 
   return (
@@ -33,8 +54,11 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home user={user} setUser={setUser} />} />
+
         <Route path="/search" element={<Search />} />
+
         <Route path="/register" element={<Register setUser={setUser} />} />
+
         <Route path="/login" element={<Login setUser={setUser} />} />
 
         <Route
