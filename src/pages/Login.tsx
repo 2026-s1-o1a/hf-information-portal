@@ -43,7 +43,7 @@ function Login({ setUser }: Props) {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
-        <h2>Sign In</h2>
+        <h2>Log In</h2>
 
         <div className={styles.registerForm}>
           <div className={styles.formGroup}>
@@ -62,7 +62,7 @@ function Login({ setUser }: Props) {
 
             <input
               type="password"
-              placeholder="Confirm your password"
+              placeholder="Enter your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
