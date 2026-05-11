@@ -31,21 +31,14 @@ services:
       dockerfile: Dockerfile
     command: npm run dev -- --host 0.0.0.0
     ports:
-      - "3000:5173"
+      - "5173:5173"
     volumes:
       - ./client:/client
       - /client/node_modules
     depends_on:
       - umb_database
-
-  umb_server:
-    container_name: umb_server
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - "8080:44378"
-
+    networks:
+      - umbnet
 
 networks:
   umbnet:
