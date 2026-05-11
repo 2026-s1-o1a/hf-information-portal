@@ -1,6 +1,6 @@
 services:
   umb_database:
-    container_name: hf_database
+    container_name: umb_database
     build:
       context: ./Database
     environment:
@@ -22,6 +22,30 @@ services:
       retries: 3
       start_period: 30s # Bootstrap duration, for this duration failures does not count towards max retries.
       start_interval: 5s # How long after the health check has started to run the healthcheck again.
+    
+  umb_client:
+    container_name: umb_client
+    working_dir: /client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "3000:5173"
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    depends_on:
+      - umb_database
+
+  umb_server:
+    container_name: umb_server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:44378"
+
 
 networks:
   umbnet:
