@@ -7,23 +7,27 @@ function Search() {
   const [sort, setSort] = useState('relevance')
 
   const [searchText, setSearchText] = useState('')
-  const [results, setResults] = useState([{ title: 'Results will appear here', type: 'info' }])
+  const [results, setResults] = useState([{name: 'Loading...', properties: {subtitle: ''}}])
 
-  const handleSearch = () => {
-    const data = [
-      { title: 'What is Heart Failure?', type: 'video' },
-      { title: 'Heart Failure Risk Factors', type: 'video' },
-      { title: 'Heart Failure: 10 Management Tips', type: 'blog' },
-      { title: 'Heart Failure Prevention Tips from a Professional', type: 'podcast' },
-    ]
+  const handleSearch =  async () => {
+    // const data = [
+    //   { title: 'What is Heart Failure?', type: 'video' },
+    //   { title: 'Heart Failure Risk Factors', type: 'video' },
+    //   { title: 'Heart Failure: 10 Management Tips', type: 'blog' },
+    //   { title: 'Heart Failure Prevention Tips from a Professional', type: 'podcast' },
+    // ]
 
-    const filtered = data.filter(item => {
-      const matchesText = item.title.toLowerCase().includes(searchText.toLowerCase())
-      const matchesType = type === 'all' || item.type === type
-      return matchesText && matchesType
-    })
+    let data = await fetch('https://localhost:44378/umbraco/delivery/api/v2/content')
+    .then(response => response.json())
 
-    setResults(filtered)
+    console.log('Fetched data:', data.items)
+    // const filtered = data.filter(item => {
+    //   const matchesText = item.title.toLowerCase().includes(searchText.toLowerCase())
+    //   const matchesType = type === 'all' || item.type === type
+    //   return matchesText && matchesType
+    // })
+
+    setResults(data.items)
   }
 
   return (
@@ -82,10 +86,11 @@ function Search() {
             {results.length === 0 ? (
               <p>No results found</p>
             ) : (
-              results.map((item, index) => (
-                <p key={index}>
-                  {item.title} ({item.type})
-                </p>
+                results.map((item, index) => (
+                <div key={index}>
+                  <h3>{item.name}</h3>
+                  <p>{item.properties.subtitle}</p>
+                </div>
               ))
             )}
           </div>
