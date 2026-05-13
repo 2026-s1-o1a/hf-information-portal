@@ -1,9 +1,12 @@
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Search from './pages/Search'
 import Login from './pages/Login'
+import AdminOnly from './pages/AdminOnly'
+import ClinicianOnly from './pages/ClinicianOnly'
 
 import './Theme.css'
 
@@ -63,6 +66,17 @@ function App() {
         <Route path="/register" element={<Register setUser={setUser} />} />
 
         <Route path="/login" element={<Login setUser={setUser} />} />
+        
+        <Route path="/AdminOnly" element={
+          <ProtectedRoute user={user} allowedRoles={['admin']}>
+            <AdminOnly/>
+          </ProtectedRoute>
+        } />
+        <Route path="/ClinicianOnly" element={
+          <ProtectedRoute user={user} allowedRoles={['doctor']}>
+            <ClinicianOnly/>
+          </ProtectedRoute>
+        } />
 
         <Route
           path="/profile"
