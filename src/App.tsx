@@ -4,6 +4,8 @@ import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Search from './pages/Search'
 import Login from './pages/Login'
+import ContentPage from './pages/ContentPage'
+import ContentDetailPage from './pages/ContentDetailPage'
 
 import './Theme.css'
 
@@ -36,7 +38,8 @@ function App() {
 
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-
+        <Route path="/content" element={<ContentPage />}/>
+        <Route path="/content/:slug" element={<ContentDetailPage />} />
         <Route
           path="/profile"
           element={user ? <Profile user={user} /> : <Navigate to="/login" />}

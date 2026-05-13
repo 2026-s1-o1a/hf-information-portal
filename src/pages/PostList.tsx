@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getPosts } from "../services/umbraco";
 import type { Post } from "../services/umbraco";
 
@@ -26,18 +27,23 @@ function PostList() {
 
   return (
     <div>
-      {posts.length === 0 && <p>No posts found.</p>}
+      {posts.map((post) => {
+        const slug =
+          post.route?.path?.replace("/", "") || "";
 
-      {posts.map((post) => (
-        <div key={post.id} style={{ marginBottom: "1rem" }}>
-          <h4>{post.title}</h4>
-          <div
+        return (
+          <div key={post.id}>
+            <Link to={`/content/${slug}`}>
+              {post.properties.pageTitle || post.id}
+            </Link>
+            <div
             dangerouslySetInnerHTML={{
-            __html: post.body || ""
+              __html: post.properties.overview
             }}
           />
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 }

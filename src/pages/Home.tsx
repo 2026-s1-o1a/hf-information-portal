@@ -1,4 +1,4 @@
-import PostList from './PostList';
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -12,7 +12,11 @@ function Home() {
         <div className="content-body">
           <h3>Latest Guidelines</h3>
           <p>Get information on the latest guidelines here.</p>
-          <PostList />
+          <p>
+          <Link to="/content">
+          Go to Content Page
+          </Link>
+          </p>
         </div>
       </div>
     </div>

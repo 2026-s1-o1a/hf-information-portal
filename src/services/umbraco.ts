@@ -2,13 +2,17 @@
 
 export type Post = {
     id: string;
-    title: string;
-    body: string;
+    name: string;
+    contentType: string;
+    route?: {
+      path: string;
+    };
+    properties: Record<string, any>;
 }
 
 export async function getPosts() {
   const res = await fetch(
-    '/umbraco/delivery/api/v2/content?filter=contentType:contentPage'
+    '/umbraco/delivery/api/v2/content?'
   );
 
   if (!res.ok) throw new Error('Failed to fetch');
@@ -18,6 +22,25 @@ export async function getPosts() {
   return data.items.map((item: any) => ({
     id: item.id,
     title: item.properties?.pageTitle || item.name,
-    body: item.properties?.bodyContent?.markup || ""
+    body: item.properties?.overview || "",
+    route: item.route,
+    properties: item.properties
   }));
+}
+
+export async function getContentBySlug(slug: string){
+  const res = await fetch(
+    `/umbraco/delivery/api/v2/content/item/${slug}`
+  );
+
+  if(!res.ok){
+    throw new Error("Failed to fetch");
+  }
+
+  const data = await res.json();
+
+  console.log("Content Item:", data);
+
+  return data;
+
 }
