@@ -6,6 +6,7 @@ interface HomePageProps {
     firstName: string;
     lastName: string;
   } | null;
+  loadUserProfile: () => void;
 }
 
 // type Role = 'user' | 'doctor' | 'custodian' | 'admin'
@@ -23,9 +24,9 @@ interface HomePageProps {
 //   type: 'article' | 'survey'
 //   targetRole: Role
 //   commentRole: Role | 'none'
-}
+// }
 
-function Home({ user }: HomePageProps) {
+function Home({ user, loadUserProfile }: HomePageProps) {
   // const [contents, setContents] = useState<Content[]>(() => {
   //   const stored = localStorage.getItem('contents')
   //   return stored ? JSON.parse(stored) : []
@@ -79,7 +80,7 @@ function Home({ user }: HomePageProps) {
   return (
 
     <div style={{ padding: '20px' }}>
-      <Navbar user={user}/>
+      <Navbar user={user} loadUserProfile={loadUserProfile}/>
       <h2>Heart Portal</h2>
     </div>
 

@@ -3,15 +3,17 @@ import { Link } from 'react-router-dom'
 import styles from './Navbar.module.css'
 // import logo from '../assets/logo.png'
 import { FiMenu, FiSearch } from 'react-icons/fi'
+import SignOutButton from './SignOutButton';
 
   interface NavbarProps {
   user: {
     firstName: string;
     lastName:  string;
   } | null;
+  loadUserProfile: () => void;
 }
 
-function Navbar({ user }: NavbarProps) {
+function Navbar({ user, loadUserProfile }: NavbarProps) {
 
   return (
     <>
@@ -42,7 +44,10 @@ function Navbar({ user }: NavbarProps) {
           </div>{' '}
         </div>
         {user ? (
+          <>
           <p>Welcome, {user.firstName} {user.lastName}!</p>
+          <SignOutButton loadUserProfile={loadUserProfile} />
+          </>
         ) : (
           <div className={styles.navbarRight}>
             <Link to="/signin">
@@ -51,6 +56,7 @@ function Navbar({ user }: NavbarProps) {
             <Link to="/signup">
               <button className={styles.signin}>Sign Up</button>
             </Link>
+            
           </div>
         )}
       </div>
