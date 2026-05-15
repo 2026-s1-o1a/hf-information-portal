@@ -1,4 +1,4 @@
-import sql from 'mssql/msnodesqlv8.js';
+import sql, { connect } from 'mssql/msnodesqlv8.js';
 import { connectDB, disconnectDB } from '../config/db.js'
 
 
@@ -209,6 +209,67 @@ const getUserById = async (userId) => {
   }
 };
 
+// USER ROLES WILL BE SELECTED WITH CHECKBOXES
+// CHECKBOXES WILL APPEAR ON NEW PAGE AFTER SIGN up
+// USER COMPLETES SIGN UP PAGE -> NAVIGATED TO NEXT PAGE WHERE THEY SELECT DESIRED ROLES
+const addUserRoles = async (userId, roleIds) => {
+  try {
+    await connectDB();
+    
+    // Ensure roleIds is an array
+    const roles = Array.isArray(roleIds) ? roleIds : [roleIds];
+    
+    const request = new sql.Request();
+    request.input('userId', sql.UniqueIdentifier, userId);
+    
+    // Start a transaction for multiple inserts
+    const transaction = new sql.Transaction();
+    await transaction.begin();
+    
+    try {
+      for (const roleId of roles) {
+        const insertRequest = new sql.Request(transaction);
+        insertRequest.input('userId', sql.UniqueIdentifier, userId);
+        insertRequest.input('roleId', sql.Int, roleId);
+        
+        // Check if already exists (optional)
+        const checkRequest = new sql.Request(transaction);
+        checkRequest.input('userId', sql.UniqueIdentifier, userId);
+        checkRequest.input('roleId', sql.Int, roleId);
+        
+        const checkResult = await checkRequest.query(`
+          SELECT * FROM UsersRoles 
+          WHERE userId = @userId AND roleId = @roleId
+        `);
+        
+        if (checkResult.recordset.length === 0) {
+          await insertRequest.query(`
+            INSERT INTO UsersRoles (userId, roleId) 
+            VALUES (@userId, @roleId)
+          `);
+        }
+      }
+      
+      await transaction.commit();
+      
+      return { 
+        success: true, 
+        message: `${roles.length} role(s) assigned successfully` 
+      };
+      
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
+
+  } catch (error) {
+    console.error("Error adding user roles:", error);
+    throw error;
+
+  } finally {
+    await disconnectDB();
+  }
+};
 
 // Return user by email
 const getUserByEmail = async (email) => {

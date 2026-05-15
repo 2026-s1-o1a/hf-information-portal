@@ -137,7 +137,7 @@ const signout = async (req, res) => {
 
 // Return user data via authenticateToken.js
 const getUser = (req, res) => {
-  res.json({ firstName: req.user.firstName, lastName: req.user.lastName });
+  res.json({ firstName: req.user.firstName, lastName: req.user.lastName, roles: 'banana' }); //Banana role is to test console printing
 };
 
 export { signup, signin, signout, getUser };
