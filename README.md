@@ -19,7 +19,19 @@ git clone https://github.com/2026-s1-o1a/hf-information-portal.git
 cd hf-information-portal
 ```
 
-### 2. Install dependencies and run dev server
+### 2. Change directory to frontend/ backend
+
+```bash
+cd client
+```
+
+or
+
+```bash
+cd backend
+```
+
+### 3. Install dependencies and run dev server in both frontend and backend
 
 ```bash
 npm install
