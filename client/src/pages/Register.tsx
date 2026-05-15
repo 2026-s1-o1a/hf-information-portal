@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '../App'
+import axios from 'axios'
 
 type Props = {
   setUser: Dispatch<SetStateAction<User | null>>
@@ -31,88 +32,85 @@ function Register({ setUser }: Props) {
   const [pharmacyAddress, setPharmacyAddress] = useState('')
   const [licenseNumber, setLicenseNumber] = useState('')
 
-  const handleRegister = () => {
-    if (!email || !firstName || !lastName || !password || !confirmPassword) {
-      alert('Please fill in all required fields')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      alert('Passwords do not match')
-      return
-    }
-
-    const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
-
-    if (users.find(u => u.email === email)) {
-      alert('User already exists')
-      return
-    }
-
-    let verificationData = {}
-
-    if (
-      requestedRole === 'doctor' ||
-      requestedRole === 'clinician' ||
-      requestedRole === 'custodian'
-    ) {
-      if (!ahpraNumber || !organisation || !workEmail || !phoneNumber) {
-        alert('Please complete verification details')
+  const handleRegister = async () => {
+    try {
+      // Validate information
+      if (!email || !firstName || !lastName || !password || !confirmPassword) {
+        alert('Please fill in all required fields')
         return
       }
 
-      verificationData = {
-        ahpraNumber,
-        organisation,
-        workEmail,
-        phoneNumber,
-      }
-    }
-
-    if (requestedRole === 'pharmacy') {
-      if (!pharmacyName || !pharmacyAddress || !licenseNumber || !phoneNumber) {
-        alert('Please complete pharmacy verification details')
+      if (password !== confirmPassword) {
+        alert('Passwords do not match')
         return
       }
 
-      verificationData = {
-        pharmacyName,
-        pharmacyAddress,
-        licenseNumber,
-        phoneNumber,
+      let verificationData = {}
+
+      if (
+        requestedRole === 'doctor' ||
+        requestedRole === 'clinician' ||
+        requestedRole === 'custodian'
+      ) {
+        if (!ahpraNumber || !organisation || !workEmail || !phoneNumber) {
+          alert('Please complete verification details')
+          return
+        }
+
+        verificationData = {
+          ahpraNumber,
+          organisation,
+          workEmail,
+          phoneNumber,
+        }
       }
+
+      if (requestedRole === 'pharmacy') {
+        if (!pharmacyName || !pharmacyAddress || !licenseNumber || !phoneNumber) {
+          alert('Please complete pharmacy verification details')
+          return
+        }
+
+        verificationData = {
+          pharmacyName,
+          pharmacyAddress,
+          licenseNumber,
+          phoneNumber,
+        }
+      }
+
+      // Send request to back end
+      const response = await axios.post(
+        `http://localhost:3000/api/auth/signup`,
+        {
+          email,
+          firstName,
+          lastName,
+          password,
+          requestedRole,
+          verificationData,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+
+      // Alert user if successfully created account
+      if (response.data.success) {
+        setUser(response.data.user)
+
+        alert(
+          requestedRole === 'patient'
+            ? 'Account created successfully'
+            : 'Verification request submitted to admin'
+        )
+
+        navigate('/')
+      }
+    } catch (error) {
+      console.error(error)
+      alert('Registration failed')
     }
-
-    const newUser: User = {
-      email,
-      firstName,
-      lastName,
-      password,
-
-      role: 'patient',
-
-      requestedRole,
-
-      verificationStatus: requestedRole === 'patient' ? 'none' : 'pending',
-
-      verificationData,
-    }
-
-    const updatedUsers = [...users, newUser]
-
-    localStorage.setItem('users', JSON.stringify(updatedUsers))
-
-    localStorage.setItem('currentUser', JSON.stringify(newUser))
-
-    setUser(newUser)
-
-    alert(
-      requestedRole === 'patient'
-        ? 'Account created successfully'
-        : 'Verification request submitted to admin'
-    )
-
-    navigate('/')
   }
 
   return (
