@@ -1,4 +1,4 @@
-import sql, { connect } from 'mssql/msnodesqlv8.js';
+import sql from 'mssql/msnodesqlv8.js';
 import { connectDB, disconnectDB } from '../config/db.js'
 
 
