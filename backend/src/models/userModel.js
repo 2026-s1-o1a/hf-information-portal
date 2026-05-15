@@ -15,6 +15,7 @@ const userExists = async (email) => {
     request.input('Email', sql.VarChar, email);
 
     // Query the database to check if user exists
+    console.log(email);
     const result = await request.query(`SELECT 1 FROM Users WHERE email = @Email`);
 
     // Return true if user exists, otherwise false

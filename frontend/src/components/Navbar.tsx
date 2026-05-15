@@ -10,10 +10,9 @@ import SignOutButton from './SignOutButton';
     firstName: string;
     lastName:  string;
   } | null;
-  loadUserProfile: () => void;
 }
 
-function Navbar({ user, loadUserProfile }: NavbarProps) {
+function Navbar({ user }: NavbarProps) {
 
   return (
     <>
@@ -46,7 +45,7 @@ function Navbar({ user, loadUserProfile }: NavbarProps) {
         {user ? (
           <>
           <p>Welcome, {user.firstName} {user.lastName}!</p>
-          <SignOutButton loadUserProfile={loadUserProfile} />
+          <SignOutButton />
           </>
         ) : (
           <div className={styles.navbarRight}>

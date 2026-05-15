@@ -1,13 +1,6 @@
-import { useNavigate } from 'react-router';
 import axios from 'axios';
 
-interface SignOutButtonProps {
-  loadUserProfile: () => void;
-}
-
-function SignOutButton({ loadUserProfile }: SignOutButtonProps) {
-
-  const navigate = useNavigate();
+function SignOutButton() {
 
   const handleSignOut = async (event: React.FormEvent) => {
 
@@ -23,8 +16,7 @@ function SignOutButton({ loadUserProfile }: SignOutButtonProps) {
       // If sign up is successful navigate to home
       if (response.data.success) {
         console.log('Sign-out successful');
-        await loadUserProfile();
-        navigate('/');
+        window.location.reload();
       } else {
         alert('Sign-out failed');
       }
