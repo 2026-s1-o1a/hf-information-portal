@@ -1,45 +1,64 @@
-import sql from 'mssql/msnodesqlv8.js';
-import dotenv from 'dotenv';
+import sql from 'mssql'
+import dotenv from 'dotenv'
 
-
-// Database configuration
-dotenv.config();
+dotenv.config()
 
 const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: 1433,
+
   options: {
-    trustedConnection: true,
     trustServerCertificate: true,
+    encrypt: false,
   },
-  driver: process.env.DB_DRIVER,
-};
 
-let pool;
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+  },
 
-// Connnect the pool
+  connectionTimeout: 10000,
+  requestTimeout: 10000,
+}
+
+let pool = null
+
+// Connect to database
 const connectDB = async () => {
   try {
-    pool = await sql.connect(config);
-    console.log('Connected to SQL Server');
-    return pool;
-  } catch (error) {
-    console.error('Database connection failed:', error.message);
-    throw new Error('Database connection failed');
-  }
-};
+    // Reuse existing pool if already connected
+    if (pool?.connected) {
+      return pool
+    }
 
-// Close the pool
+    console.log('Attempting DB connection...')
+
+    pool = await sql.connect(config)
+
+    console.log('Connected to SQL Server')
+
+    return pool
+  } catch (error) {
+    console.error('Database connection failed:', error.message)
+    throw new Error('Database connection failed')
+  }
+}
+
+// Close database connection
 const disconnectDB = async () => {
   try {
     if (pool) {
-      await pool.close();
-      console.log('Disconnected from SQL Server');
+      await pool.close()
+      console.log('Disconnected from SQL Server')
+      pool = null
     }
   } catch (error) {
-    console.error('Error closing the database connection:', error.message);
+    console.error('Error closing database connection:', error.message)
   }
-};
+}
 
-export { connectDB, disconnectDB };
-
+export { sql, connectDB, disconnectDB }
