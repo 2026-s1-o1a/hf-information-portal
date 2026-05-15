@@ -1,0 +1,76 @@
+import sql from 'mssql'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const config = {
+  server: process.env.DB_SERVER || 'localhost',
+
+  database: process.env.DB_DATABASE,
+
+  user: process.env.DB_USER,
+
+  password: process.env.DB_PASSWORD,
+
+  port: 1433,
+
+  options: {
+    trustServerCertificate: true,
+    encrypt: false,
+  },
+
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+  },
+
+  connectionTimeout: 10000,
+
+  requestTimeout: 10000,
+}
+
+let pool: any = null
+
+// Connect to database
+const connectDB = async () => {
+  try {
+    // Reuse existing pool if already connected
+    if (pool && pool.connected) {
+      return pool
+    }
+
+    console.log('Attempting DB connection...')
+
+    pool = await new sql.ConnectionPool(config).connect()
+
+    console.log('Connected to SQL Server')
+
+    return pool
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Database connection failed:', error.message)
+    }
+
+    throw new Error('Database connection failed')
+  }
+}
+
+// Close database connection
+const disconnectDB = async () => {
+  try {
+    if (pool) {
+      await pool.close()
+
+      console.log('Disconnected from SQL Server')
+
+      pool = null
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error closing database connection:', error.message)
+    }
+  }
+}
+
+export { sql, connectDB, disconnectDB }
