@@ -1,14 +1,14 @@
-import sql from 'mssql'
-import { connectDB, disconnectDB } from '../config/db.js'
+import sql from 'mssql/msnodesqlv8.js'
+import { connectDB } from '../config/db.js'
 
 // Return true or false based on user existing
 const userExists = async email => {
   try {
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
     // Create a request object
-    const request = new sql.Request()
+    const request = pool.request()
 
     // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
@@ -22,8 +22,6 @@ const userExists = async email => {
   } catch (error) {
     console.error('Error checking user existence:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
@@ -31,10 +29,10 @@ const userExists = async email => {
 const getUserIdByEmail = async email => {
   try {
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
     // Create a request object
-    const request = new sql.Request()
+    const request = pool.request()
 
     // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
@@ -52,16 +50,31 @@ const getUserIdByEmail = async email => {
   } catch (error) {
     console.error('Error getting userId by email:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
 // Create user and returns user id
 const createUser = async userData => {
-  const { firstName, lastName, email, hashedPassword } = userData
+  const {
+    email,
+    firstName,
+    lastName,
+    hashedPassword,
+    role,
+    requestedRole,
+    verificationStatus,
+    verificationData,
+  } = userData
 
-  if (!firstName || !lastName || !email || !hashedPassword) {
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !hashedPassword ||
+    !role ||
+    !requestedRole ||
+    !verificationStatus
+  ) {
     throw new Error('Missing required user fields')
   }
 
@@ -69,25 +82,45 @@ const createUser = async userData => {
 
   try {
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
-    // Ensures that both operations succeed or fail (Create User & Create User Credentials)
-    transaction = new sql.Transaction()
+    transaction = new sql.Transaction(pool)
     await transaction.begin()
 
     // Create a request object
     const request = new sql.Request(transaction)
 
     // Add the parameters to the request object
+    request.input('Email', sql.VarChar, email)
     request.input('FirstName', sql.VarChar, firstName)
     request.input('LastName', sql.VarChar, lastName)
-    request.input('Email', sql.VarChar, email)
+    request.input('Role', sql.VarChar, role)
+    request.input('RequestedRole', sql.VarChar, requestedRole)
+    request.input('VerificationStatus', sql.VarChar, verificationStatus)
+    request.input('VerificationData', sql.NVarChar(sql.MAX), JSON.stringify(verificationData || {}))
 
     // Query the database to insert user by firstname, lastname, and email
-    const result = await request.query(
-      `INSERT INTO Users (firstName, lastName, email) OUTPUT INSERTED.userId VALUES (@FirstName, @LastName, @Email)`
-    )
-
+    const result = await request.query(`
+  INSERT INTO Users (
+    email,
+    firstName,
+    lastName,
+    role,
+    requestedRole,
+    verificationStatus,
+    verificationData
+  )
+  OUTPUT INSERTED.userId
+  VALUES (
+    @Email,
+    @FirstName,
+    @LastName,
+    @Role,
+    @RequestedRole,
+    @VerificationStatus,
+    @VerificationData
+  )
+`)
     const userId = result.recordset[0].userId
 
     // Call createUserCredentials() to create user credentials for the user
@@ -97,11 +130,11 @@ const createUser = async userData => {
 
     return userId
   } catch (error) {
-    if (transaction) await transaction.rollback()
+    // if (transaction && !transaction._aborted) {
+    //   await transaction.rollback()
+    // }
     console.error('Error creating user:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
@@ -141,10 +174,10 @@ const getHashedPasswordByEmail = async email => {
     }
 
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
     // Create a request object
-    const request = new sql.Request()
+    const request = pool.request()
 
     // Add the parameter to the request object
     request.input('UserId', sql.UniqueIdentifier, userId)
@@ -159,13 +192,11 @@ const getHashedPasswordByEmail = async email => {
       throw new Error('User credentials not found')
     }
 
-    // Return hashedPassworrd
+    // Return hashedPassword
     return result.recordset[0].hashedPassword
   } catch (error) {
     console.error('Error getting password hash by email:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
@@ -173,10 +204,10 @@ const getHashedPasswordByEmail = async email => {
 const getUserById = async userId => {
   try {
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
     // Create a request object
-    const request = new sql.Request()
+    const request = pool.request()
 
     // Add the parameter to the request object
     request.input('UserId', sql.UniqueIdentifier, userId)
@@ -194,8 +225,6 @@ const getUserById = async userId => {
   } catch (error) {
     console.error('Error getting user by id:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
@@ -204,16 +233,14 @@ const getUserById = async userId => {
 // USER COMPLETES SIGN UP PAGE -> NAVIGATED TO NEXT PAGE WHERE THEY SELECT DESIRED ROLES
 const addUserRoles = async (userId, roleIds) => {
   try {
-    await connectDB()
+    // Connect to the database
+    const pool = await connectDB()
 
     // Ensure roleIds is an array
     const roles = Array.isArray(roleIds) ? roleIds : [roleIds]
 
-    const request = new sql.Request()
-    request.input('userId', sql.UniqueIdentifier, userId)
-
     // Start a transaction for multiple inserts
-    const transaction = new sql.Transaction()
+    const transaction = new sql.Transaction(pool)
     await transaction.begin()
 
     try {
@@ -253,8 +280,6 @@ const addUserRoles = async (userId, roleIds) => {
   } catch (error) {
     console.error('Error adding user roles:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 
@@ -262,10 +287,10 @@ const addUserRoles = async (userId, roleIds) => {
 const getUserByEmail = async email => {
   try {
     // Connect to the database
-    await connectDB()
+    const pool = await connectDB()
 
     // Create a request object
-    const request = new sql.Request()
+    const request = pool.request()
 
     // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
@@ -283,8 +308,6 @@ const getUserByEmail = async email => {
   } catch (error) {
     console.error('Error getting user by email:', error)
     throw error
-  } finally {
-    await disconnectDB()
   }
 }
 

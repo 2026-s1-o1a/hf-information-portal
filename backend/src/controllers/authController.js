@@ -1,45 +1,53 @@
-import bcrypt from 'bcryptjs';
-import { userExists, createUser, getHashedPasswordByEmail, getUserByEmail } from '../models/userModel.js'
+import bcrypt from 'bcryptjs'
+import {
+  userExists,
+  createUser,
+  getHashedPasswordByEmail,
+  getUserByEmail,
+} from '../models/userModel.js'
 import { generateToken } from '../utils/generateToken.js'
-
 
 // Create user and user credential
 const signup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { email, firstName, lastName, password, requestedRole, verificationData } = req.body
 
   // Simple Validation
-  if (!firstName || !lastName || !email || !password) {
-  return res.status(400).json({
-    error: "INVALID_INPUT",
-    message: "All fields are required"
-  });
-}
+  if (!email || !firstName || !lastName || !password || !requestedRole) {
+    return res.status(400).json({
+      error: 'INVALID_INPUT',
+      message: 'All fields are required',
+    })
+  }
 
   try {
     // Check if user exists
-    const user = await userExists(email);
+    const user = await userExists(email)
 
     if (user) {
       return res.status(409).json({
-        error: "USER_ALREADY_EXISTS",
-        message: "An account with this email already exists."
-      });
+        error: 'USER_ALREADY_EXISTS',
+        message: 'An account with this email already exists.',
+      })
     }
 
     // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     // Prepare user data
     const userData = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      hashedPassword: hashedPassword
-    };
+      email,
+      firstName,
+      lastName,
+      hashedPassword,
+      role: 'patient',
+      requestedRole,
+      verificationStatus: requestedRole === 'patient' ? 'none' : 'pending',
+      verificationData,
+    }
 
     // Create the user and return userId
-    const userId = await createUser(userData);
+    const userId = await createUser(userData)
 
     // Generate JWT Token
     const token = generateToken(userId, res)
@@ -47,56 +55,52 @@ const signup = async (req, res) => {
     // Return successful response
     return res.status(201).json({
       success: true,
-      data: {
-        user: {
-          id: userId,
-          email: email,
-        },
-        token,
+      user: {
+        id: userId,
+        email: email,
       },
-    });
-
+    })
   } catch (error) {
-    console.error("Sign-up error:", error);
-    
+    console.error('Sign-up error:', error)
+
     return res.status(500).json({
-      error: "SERVER_ERROR",
-      message: "Something went wrong"
-    });
+      error: 'SERVER_ERROR',
+      message: 'Something went wrong',
+    })
   }
-};
+}
 
 // Handle user sign-in and return a JWT token
 const signin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   // Simple Validation
   if (!email || !password) {
     return res.status(400).json({
-      error: "MISSING_CREDENTIALS",
-      message: "Email and password are required",
-    });
+      error: 'MISSING_CREDENTIALS',
+      message: 'Email and password are required',
+    })
   }
 
   try {
     // Check if user exists
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(email)
 
     if (!user) {
       return res.status(401).json({
-        error: "INVALID_CREDENTIALS",
-        message: "Invalid email or password",
-      });
+        error: 'INVALID_CREDENTIALS',
+        message: 'Invalid email or password',
+      })
     }
 
     // Verify the password
-    const isPasswordValid = await bcrypt.compare(password, await getHashedPasswordByEmail(email));
+    const isPasswordValid = await bcrypt.compare(password, await getHashedPasswordByEmail(email))
 
     if (!isPasswordValid) {
       return res.status(401).json({
-        error: "INVALID_CREDENTIALS",
-        message: "Invalid email or password",
-      });
+        error: 'INVALID_CREDENTIALS',
+        message: 'Invalid email or password',
+      })
     }
 
     // Generate JWT Token
@@ -112,32 +116,31 @@ const signin = async (req, res) => {
         },
         token,
       },
-    });
-
+    })
   } catch (error) {
-    console.error("Sign-in error:", error);
+    console.error('Sign-in error:', error)
 
     return res.status(500).json({
-      error: "SERVER_ERROR",
-      message: "Something went wrong",
-    });
+      error: 'SERVER_ERROR',
+      message: 'Something went wrong',
+    })
   }
-};
+}
 
 // Handle sign-out by removing JWT token
 const signout = async (req, res) => {
-  res.cookie("jwt", "", {
+  res.cookie('jwt', '', {
     httpOnly: true,
     expires: new Date(0),
-  });
+  })
   res.status(200).json({
     success: true,
-  });
-};
+  })
+}
 
 // Return user data via authenticateToken.js
 const getUser = (req, res) => {
-  res.json({ firstName: req.user.firstName, lastName: req.user.lastName, roles: 'banana' }); //Banana role is to test console printing
-};
+  res.json({ firstName: req.user.firstName, lastName: req.user.lastName, roles: 'banana' }) //Banana role is to test console printing
+}
 
-export { signup, signin, signout, getUser };
+export { signup, signin, signout, getUser }

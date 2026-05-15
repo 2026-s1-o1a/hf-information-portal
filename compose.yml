@@ -7,8 +7,8 @@ services:
       MSSQL_SA_PASSWORD: ${DB_PASSWORD}
       SA_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "1433:1433"
-      - "1434:1434"
+      - '1433:1433'
+      - '1434:1434'
     volumes:
       - umb_database:/var/opt/mssql
     networks:
@@ -16,13 +16,13 @@ services:
     healthcheck:
       # This healthcheck is to make sure that the database is up and running before the umbraco container starts.
       # It works by querying the database for the state of the umbracoDb database, ensuring it exists.
-      test: ["CMD", "bash", "/healthcheck.sh"]
+      test: ['CMD', 'bash', '/healthcheck.sh']
       interval: 5m
       timeout: 5s
       retries: 3
       start_period: 30s # Bootstrap duration, for this duration failures does not count towards max retries.
       start_interval: 5s # How long after the health check has started to run the healthcheck again.
-    
+
   umb_client:
     container_name: umb_client
     working_dir: /client
@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     command: npm run dev -- --host 0.0.0.0
     ports:
-      - "5173:5173"
+      - '5174:5174'
     volumes:
       - ./client:/client
       - /client/node_modules
@@ -43,7 +43,6 @@ services:
 networks:
   umbnet:
     driver: bridge
-
 
 volumes:
   umb_database:
