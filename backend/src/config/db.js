@@ -20,6 +20,10 @@ let pool;
 // Connnect the pool
 const connectDB = async () => {
   try {
+    // Reuse existing pool if already connected
+    if (pool?.connected) {
+      return pool
+    }
     pool = await sql.connect(config);
     console.log('Connected to SQL Server');
     return pool;
@@ -35,6 +39,7 @@ const disconnectDB = async () => {
     if (pool) {
       await pool.close();
       console.log('Disconnected from SQL Server');
+      pool = null
     }
   } catch (error) {
     console.error('Error closing the database connection:', error.message);
