@@ -45,6 +45,9 @@ function Login({ setUser }: Props) {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
+        <button className={styles.underlinedBtn} onClick={() => navigate('/')}>
+          ⏎Back to portal
+        </button>
         <h2>LOG IN</h2>
 
         <div className={styles.registerForm}>
@@ -68,17 +71,23 @@ function Login({ setUser }: Props) {
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
+
+            <div className={styles.forgotDiv}>
+              <button className={styles.underlinedBtn}>Forgot password?</button>
+            </div>
           </div>
 
           <button className={styles.registerBtn} onClick={handleLogin}>
             Log In
           </button>
 
-          <p>Don't have an account?</p>
+          <div className={styles.redirect}>
+            <p>Don't have an account?</p>
 
-          <button className={styles.registerBtn} onClick={() => navigate('/register')}>
-            Create One
-          </button>
+            <button className={styles.underlinedBtn} onClick={() => navigate('/register')}>
+              Create One
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -116,6 +116,9 @@ function Register({ setUser }: Props) {
   return (
     <div className={styles.registerContainer}>
       <div className={styles.registerCard}>
+        <button className={styles.underlinedBtn} onClick={() => navigate('/')}>
+          ⏎Back to portal
+        </button>
         <h2>REGISTER</h2>
 
         <div className={styles.registerForm}>
@@ -294,11 +297,12 @@ function Register({ setUser }: Props) {
             Create Account
           </button>
 
-          <p>Already have an account?</p>
-
-          <button className={styles.registerBtn} onClick={() => navigate('/login')}>
-            Return to Login
-          </button>
+          <div className={styles.redirect}>
+            <p>Already have an account?</p>
+            <button className={styles.underlinedBtn} onClick={() => navigate('/login')}>
+              Return to Login
+            </button>
+          </div>
         </div>
       </div>
     </div>
