@@ -4,6 +4,7 @@ import {
   createUser,
   getHashedPasswordByEmail,
   getUserByEmail,
+  getPendingVerificationRequests,
 } from '../models/userModel.js'
 import { generateToken } from '../utils/generateToken.js'
 
@@ -143,7 +144,36 @@ const signout = async (req, res) => {
 
 // Return user data via authenticateToken.js
 const getUser = (req, res) => {
-  res.json({ firstName: req.user.firstName, lastName: req.user.lastName, roles: 'banana' }) //Banana role is to test console printing
+  res.json({
+    id: req.user.userId,
+    email: req.user.email,
+
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+
+    role: req.user.role,
+
+    requestedRole: req.user.requestedRole,
+
+    verificationStatus: req.user.verificationStatus,
+  })
 }
 
-export { signup, signin, signout, getUser }
+// Return the request forms
+const getVerificationRequests = async (req, res) => {
+  try {
+    const requests = await getPendingVerificationRequests()
+    const parsedRequests = requests.map(request => ({
+      ...request,
+      verificationData: JSON.parse(request.verificationData || '{}'),
+    }))
+
+    res.status(200).json(parsedRequests)
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch requests',
+    })
+  }
+}
+
+export { signup, signin, signout, getUser, getVerificationRequests }

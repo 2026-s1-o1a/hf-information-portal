@@ -37,7 +37,7 @@ function Navbar({ user, setUser }: Props) {
 
   return (
     <nav className={styles.navbar}>
-      {/* LEFT */}
+      {/* Left */}
       <div className={styles.navbarLeft}>
         <Link to="/" className={styles.logoLink}>
           <img src={logo} alt="HF Portal Logo" className={styles.logo} />
@@ -46,13 +46,13 @@ function Navbar({ user, setUser }: Props) {
         </Link>
       </div>
 
-      {/* CENTER */}
+      {/* Center */}
       <div className={styles.navbarCenter}>
         <Link to="/search">Resources</Link>
 
         {user && <Link to="/surveys">Surveys</Link>}
 
-        {user?.role === 'admin' && <Link to="/AdminOnly">Admin Dashboard</Link>}
+        {user?.role === 'admin' && <Link to="/admin_panel">Admin Dashboard</Link>}
 
         {user?.role === 'doctor' && <Link to="/ClinicianOnly">Clinician Dashboard</Link>}
         <a href="https://ceih.sa.gov.au/contact-us" target="_blank" rel="noopener noreferrer">
@@ -60,7 +60,7 @@ function Navbar({ user, setUser }: Props) {
         </a>
       </div>
 
-      {/* RIGHT */}
+      {/* Right */}
       <div className={styles.navbarRight}>
         {user ? (
           <>

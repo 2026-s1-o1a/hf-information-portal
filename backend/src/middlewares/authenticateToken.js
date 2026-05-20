@@ -7,6 +7,7 @@ import { getUserById } from '../models/userModel.js'
 dotenv.config()
 
 export const authenticateToken = async (req, res, next) => {
+  console.log('Token Authentication check | authenticationToken.js')
   let token
 
   // Check if token exists

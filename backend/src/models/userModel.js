@@ -228,9 +228,7 @@ const getUserById = async userId => {
   }
 }
 
-// USER ROLES WILL BE SELECTED WITH CHECKBOXES
-// CHECKBOXES WILL APPEAR ON NEW PAGE AFTER SIGN up
-// USER COMPLETES SIGN UP PAGE -> NAVIGATED TO NEXT PAGE WHERE THEY SELECT DESIRED ROLES
+// USER ROLES WILL BE SELECTED DROPDOWN BAR
 const addUserRoles = async (userId, roleIds) => {
   try {
     // Connect to the database
@@ -311,4 +309,29 @@ const getUserByEmail = async email => {
   }
 }
 
-export { userExists, createUser, getHashedPasswordByEmail, getUserById, getUserByEmail }
+const getPendingVerificationRequests = async () => {
+  const pool = await connectDB()
+
+  const result = await pool.request().query(`
+    SELECT
+      userId As id,
+      firstName,
+      lastName,
+      requestedRole,
+      verificationStatus,
+      verificationData
+    FROM Users
+    WHERE verificationStatus = 'pending'
+  `)
+
+  return result.recordset
+}
+
+export {
+  userExists,
+  createUser,
+  getHashedPasswordByEmail,
+  getUserById,
+  getUserByEmail,
+  getPendingVerificationRequests,
+}

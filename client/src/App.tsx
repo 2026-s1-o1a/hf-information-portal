@@ -6,7 +6,7 @@ import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Search from './pages/Search'
 import Login from './pages/Login'
-import AdminOnly from './pages/AdminOnly'
+import AdminPanel from './pages/AdminPanel'
 import ClinicianOnly from './pages/ClinicianOnly'
 
 import './Theme.css'
@@ -71,10 +71,10 @@ function App() {
         <Route path="/login" element={<Login setUser={setUser} />} />
 
         <Route
-          path="/AdminOnly"
+          path="/admin_panel"
           element={
             <ProtectedRoute user={user} allowedRoles={['admin']}>
-              <AdminOnly />
+              <AdminPanel />
             </ProtectedRoute>
           }
         />

@@ -9,7 +9,7 @@ type Props = {
 function Home({ user }: Props) {
   return (
     <div className={styles.homeContainer}>
-      {/* HERO SECTION */}
+      {/* Hero section */}
       <section className={styles.heroSection}>
         <h1>Heart Failure Information Portal</h1>
 
@@ -17,17 +17,9 @@ function Home({ user }: Props) {
           Trusted heart failure information and healthcare resources for patients, clinicians and
           healthcare organisations.
         </p>
-
-        {!user && (
-          <div className={styles.heroButtons}>
-            <button className={styles.primaryBtn}>Learn More</button>
-
-            <button className={styles.secondaryBtn}>Browse Resources</button>
-          </div>
-        )}
       </section>
 
-      {/* FEATURED CONTENT */}
+      {/* Features */}
       <section className={styles.cardsSection}>
         <h2>Featured Resources</h2>
 
@@ -76,7 +68,7 @@ function Home({ user }: Props) {
         </div>
       </section>
 
-      {/* ROLE-BASED SECTION */}
+      {/* Test div */}
       {user && (
         <section className={styles.dashboardSection}>
           <h2>Welcome back</h2>
