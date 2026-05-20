@@ -1,4 +1,4 @@
-import app from './src/app.js'
+import app from './src/app.ts'
 import { disconnectDB } from './src/config/db.js'
 
 const port = 3000

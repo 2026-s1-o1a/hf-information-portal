@@ -1,4 +1,5 @@
 import styles from './Register.module.css'
+import axios from 'axios'
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -17,29 +18,38 @@ function Login({ setUser }: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = () => {
-    const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
+  const handleLogin = async () => {
+    try {
+      if (!email || !password) {
+        alert('Please enter email and password')
+        return
+      }
 
-    const foundUser = users.find(u => u.email === email && u.password === password)
+      const response = await axios.post(
+        'http://localhost:3000/api/auth/signin',
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      )
 
-    if (!foundUser) {
-      alert('User not found')
-      return
+      if (response.data.success) {
+        setUser(response.data.data.user)
+
+        navigate('/')
+      }
+    } catch (error: unknown) {
+      console.error(error)
+
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data?.message || 'Login failed')
+      } else {
+        alert('Login failed')
+      }
     }
-
-    localStorage.setItem('currentUser', JSON.stringify(foundUser))
-
-    setUser(foundUser)
-
-    if (foundUser.verificationStatus === 'pending') {
-      alert('Your verification request is currently pending admin approval')
-    }
-
-    if (foundUser.verificationStatus === 'rejected') {
-      alert('Your verification request has been rejected')
-    }
-
-    navigate('/')
   }
 
   return (
