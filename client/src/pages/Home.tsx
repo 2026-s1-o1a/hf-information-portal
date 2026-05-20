@@ -1,156 +1,95 @@
-import { useState } from 'react'
+import styles from './Home.module.css'
+
 import type { User } from '../App'
 
 type Props = {
   user: User | null
-  setUser: (u: User) => void
-}
-
-type Role = 'user' | 'doctor' | 'custodian' | 'admin'
-
-const roleLabels: Record<Role, string> = {
-  user: 'Everyone',
-  doctor: 'Doctors',
-  custodian: 'Custodians',
-  admin: 'Admins',
-}
-
-type Content = {
-  id: number
-  title: string
-  type: 'article' | 'survey'
-  targetRole: Role
-  commentRole: Role | 'none'
 }
 
 function Home({ user }: Props) {
-  const [contents, setContents] = useState<Content[]>(() => {
-    const stored = localStorage.getItem('contents')
-    return stored ? JSON.parse(stored) : []
-  })
-
-  const [newTitle, setNewTitle] = useState('')
-  const [targetRole, setTargetRole] = useState<Role | ''>('')
-  const [commentRole, setCommentRole] = useState<Role | 'none'>('none')
-
-  const roleLevel: Record<Role, number> = {
-    user: 1,
-    doctor: 2,
-    custodian: 3,
-    admin: 4,
-  }
-
-  const handleAddContent = () => {
-    if (!newTitle) return
-    if (!targetRole) {
-      alert('Please select target role')
-      return
-    }
-
-    const newContent: Content = {
-      id: Date.now(),
-      title: newTitle,
-      type: 'survey',
-      targetRole,
-      commentRole,
-    }
-
-    const updated = [...contents, newContent]
-
-    setContents(updated)
-    localStorage.setItem('contents', JSON.stringify(updated))
-
-    // reset everything
-    setNewTitle('')
-    setTargetRole('')
-    setCommentRole('none')
-  }
-
-  const getCommentOptions = () => {
-    if (!targetRole) return []
-
-    const levels: Role[] = ['user', 'doctor']
-
-    return levels.filter(r => roleLevel[r] >= roleLevel[targetRole])
-  }
-
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>HF Portal</h2>
+    <div className={styles.homeContainer}>
+      {/* HERO SECTION */}
+      <section className={styles.heroSection}>
+        <h1>Heart Failure Information Portal</h1>
 
-      {/* ONLY custodian can create content */}
-      {user?.role === 'custodian' && (
-        <div>
-          <input
-            value={newTitle}
-            onChange={e => setNewTitle(e.target.value)}
-            placeholder="Survey title"
-          />
+        <p>
+          Trusted heart failure information and healthcare resources for patients, clinicians and
+          healthcare organisations.
+        </p>
 
-          {/* TARGET */}
-          <div>
-            <label>Audience:</label>
-            <select
-              value={targetRole}
-              onChange={e => {
-                const newTarget = e.target.value as Role
-                setTargetRole(newTarget)
+        {!user && (
+          <div className={styles.heroButtons}>
+            <button className={styles.primaryBtn}>Learn More</button>
 
-                // reset invalid commentRole when target changes
-                if (commentRole !== 'none' && roleLevel[commentRole] < roleLevel[newTarget]) {
-                  setCommentRole('none')
-                }
-              }}
+            <button className={styles.secondaryBtn}>Browse Resources</button>
+          </div>
+        )}
+      </section>
+
+      {/* FEATURED CONTENT */}
+      <section className={styles.cardsSection}>
+        <h2>Featured Resources</h2>
+
+        <div className={styles.cardGrid}>
+          <div className={styles.card}>
+            <h3>News and Events</h3>
+            <p>
+              Stay up to date with the latest stories, insights, and achievements from across the
+              CEIH. Explore how our work is shaping innovation and impact in health and research.
+            </p>
+            <a
+              href="https://ceih.sa.gov.au/news-and-events"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <option value="">Select</option>
-              <option value="user">{roleLabels.user}</option>
-              <option value="doctor">{roleLabels.doctor}</option>
-            </select>
+              Learn more
+            </a>
           </div>
 
-          {/* COMMENT CONTROL */}
-          <div>
-            <label>Who can comment?</label>
-
-            <select
-              value={commentRole}
-              onChange={e => setCommentRole(e.target.value as Role | 'none')}
+          <div className={styles.card}>
+            <h3>Clinical Networks</h3>
+            <p>
+              Connecting clinicians, consumers and partners to drive innovation and improve
+              healthcare across South Australia.
+            </p>
+            <a
+              href="https://ceih.sa.gov.au/clinical-networks"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <option value="none">No one</option>
-
-              {getCommentOptions().map(role => (
-                <option key={role} value={role}>
-                  {roleLabels[role]}
-                </option>
-              ))}
-            </select>
+              Learn more
+            </a>
           </div>
 
-          <button onClick={handleAddContent}>Add Survey</button>
+          <div className={styles.card}>
+            <h3>3</h3>
+
+            <p>GHI</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>4</h3>
+
+            <p>JKL</p>
+          </div>
         </div>
-      )}
+      </section>
 
-      {contents
-        .filter(c => {
-          if (!user) return c.targetRole === 'user'
-          if (user.role === 'admin') return true
+      {/* ROLE-BASED SECTION */}
+      {user && (
+        <section className={styles.dashboardSection}>
+          <h2>Welcome back</h2>
 
-          return roleLevel[user.role] >= roleLevel[c.targetRole]
-        })
-        .map(c => (
-          <div key={c.id} style={{ border: '1px solid', margin: 10 }}>
-            <h3>{c.title}</h3>
+          <div className={styles.dashboardCard}>
+            <p>
+              Logged in as: <strong>{user.role}</strong>
+            </p>
 
-            {user &&
-            (user.role === 'admin' ||
-              user.role === 'custodian' ||
-              (c.commentRole !== 'none' && roleLevel[user.role] >= roleLevel[c.commentRole])) ? (
-              <textarea placeholder="Comment..." />
-            ) : (
-              <p>No permission to comment</p>
-            )}
+            <p>Test</p>
           </div>
-        ))}
+        </section>
+      )}
     </div>
   )
 }
