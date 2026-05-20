@@ -1,28 +1,26 @@
-import jwt from "jsonwebtoken";
-import sql from 'mssql/msnodesqlv8.js';
+import jwt from 'jsonwebtoken'
+import sql from 'mssql'
 import { connectDB, disconnectDB } from '../config/db.js'
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 import { getUserById } from '../models/userModel.js'
 
-dotenv.config();
-
+dotenv.config()
 
 export const authenticateToken = async (req, res, next) => {
-
-  let token;
+  let token
 
   // Check if token exists
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1] // ["Bearer, "Token"];
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1] // ["Bearer, "Token"];
   } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
+    token = req.cookies.jwt
   }
 
   if (!token) {
     return res.status(401).json({
-      error: "NO_TOKEN",
-      message: "No token provided"
-    });
+      error: 'NO_TOKEN',
+      message: 'No token provided',
+    })
   }
 
   try {
@@ -33,17 +31,17 @@ export const authenticateToken = async (req, res, next) => {
 
     if (!user) {
       return res.status(401).json({
-        error: "USER_NOT_FOUND",
-        message: "User no longer exists"
-      });
+        error: 'USER_NOT_FOUND',
+        message: 'User no longer exists',
+      })
     }
 
-    req.user = user;
-    next();
+    req.user = user
+    next()
   } catch (error) {
     return res.status(401).json({
-      error: "INVALID_TOKEN",
-      message: "Token is invalid or expired"
-    });
+      error: 'INVALID_TOKEN',
+      message: 'Token is invalid or expired',
+    })
   }
-};
+}

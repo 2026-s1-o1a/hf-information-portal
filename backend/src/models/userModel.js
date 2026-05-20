@@ -1,4 +1,4 @@
-import sql from 'mssql/msnodesqlv8.js'
+import sql from 'mssql'
 import { connectDB } from '../config/db.js'
 
 // Return true or false based on user existing
