@@ -1,11 +1,13 @@
-// import { Link } from 'react-router-dom'
 import type { User } from '../App'
 import type { Dispatch, SetStateAction } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom'
 
+import axios from 'axios'
+
 import styles from './Navbar.module.css'
+
 import logo from '../assets/logo.png'
-import { FiMenu, FiSearch } from 'react-icons/fi'
 
 type Props = {
   user: User | null
@@ -15,77 +17,71 @@ type Props = {
 function Navbar({ user, setUser }: Props) {
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser')
-    setUser(null)
-    navigate('/')
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        'http://localhost:3000/api/auth/signout',
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+
+      setUser(null)
+
+      navigate('/')
+    } catch (error) {
+      console.error('Logout failed', error)
+    }
   }
 
   return (
-    <div className={styles.navbar}>
+    <nav className={styles.navbar}>
+      {/* LEFT */}
       <div className={styles.navbarLeft}>
         <Link to="/" className={styles.logoLink}>
-          <img src={logo} alt="logo" className={styles.logo} />
-          <span className={styles.title}>HF Portal</span>
+          <img src={logo} alt="HF Portal Logo" className={styles.logo} />
+
+          <span className={styles.title}>CEIH-HF Portal</span>
         </Link>
       </div>
 
+      {/* CENTER */}
       <div className={styles.navbarCenter}>
-        <a
-          href="https://ceih.sa.gov.au/clinical-networks"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Clinical Networks
+        <Link to="/search">Resources</Link>
+
+        {user && <Link to="/surveys">Surveys</Link>}
+
+        {user?.role === 'admin' && <Link to="/AdminOnly">Admin Dashboard</Link>}
+
+        {user?.role === 'doctor' && <Link to="/ClinicianOnly">Clinician Dashboard</Link>}
+        <a href="https://ceih.sa.gov.au/contact-us" target="_blank" rel="noopener noreferrer">
+          Contact CEIH
         </a>
-        <a href="https://ceih.sa.gov.au/news-and-events" target="_blank" rel="noopener noreferrer">
-          News and Events
-        </a>
-        {user?.role == 'admin' ? (
-          <>
-            <Link to="/AdminOnly">
-              <span>Admin Dashboard</span>
-            </Link>
-          </>
-        ) : (
-          <></>
-        )}
-        {user?.role == 'doctor' ? (
-          <>
-            <Link to="/ClinicianOnly">
-              <span>Clinician Dashboard</span>
-            </Link>
-          </>
-        ) : (
-          <></>
-        )}
-        <div className={styles.searchBar}>
-          {' '}
-          <FiMenu className={styles.icon} />{' '}
-          <input type="text" placeholder="Search" className={styles.searchInput} />{' '}
-          <FiSearch className={styles.icon} />{' '}
-        </div>{' '}
       </div>
 
+      {/* RIGHT */}
       <div className={styles.navbarRight}>
         {user ? (
           <>
-            <Link to="/profile">
-              <span>
-                Hi, {user.username} ({user.role})
-              </span>
+            <Link to="/profile" className={styles.hi}>
+              Hi, {user.firstName}
             </Link>
-            <button className={styles.signin} onClick={handleLogout}>
+
+            <button className={styles.joinUs} onClick={handleLogout}>
               Logout
             </button>
           </>
         ) : (
-          <Link to="/register">
-            <button className={styles.signin}>Join us</button>
-          </Link>
+          <>
+            <Link to="/register">
+              <button className={styles.joinUs}>Join Us</button>
+            </Link>
+          </>
         )}
       </div>
-    </div>
+    </nav>
   )
 }
+
 export default Navbar

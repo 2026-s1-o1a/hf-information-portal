@@ -1,0 +1,124 @@
+.homeContainer {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--primary);
+  color: var(--text-main);
+}
+
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: var(--surface);
+  padding: 5rem 1rem;
+}
+
+.heroSection h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.heroSection p {
+  max-width: 700px;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: 0.9rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.primaryBtn {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+.secondaryBtn {
+  background-color: var(--surface);
+  color: var(--text-main);
+}
+
+.primaryBtn:hover,
+.secondaryBtn:hover {
+  opacity: 0.9;
+}
+
+.primaryBtn:active,
+.secondaryBtn:active {
+  transform: scale(0.98);
+}
+
+.cardsSection {
+  margin-top: 2rem;
+}
+
+.cardsSection h2 {
+  margin-bottom: 1.5rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border-radius: 12px;
+
+  background-color: var(--surface);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.card h3 {
+  margin-bottom: 0.8rem;
+}
+
+.card p {
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.dashboardSection {
+  margin-top: 4rem;
+}
+
+.dashboardCard {
+  margin-top: 1rem;
+  padding: 1.5rem;
+
+  border-radius: 12px;
+
+  background-color: var(--surface);
+}
