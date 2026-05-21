@@ -1,139 +1,112 @@
 import sql from 'mssql'
 import { connectDB } from '../config/db.js'
 
-// Return true or false based on user existing
+// Check if user exists
 const userExists = async email => {
   try {
-    // Connect to the database
     const pool = await connectDB()
 
-    // Create a request object
     const request = pool.request()
 
-    // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
 
-    // Query the database to check if user exists
-    console.log(email)
-    const result = await request.query(`SELECT 1 FROM Users WHERE email = @Email`)
+    const result = await request.query(`
+      SELECT 1
+      FROM Users
+      WHERE email = @Email
+    `)
 
-    // Return true if user exists, otherwise false
     return result.recordset.length > 0
   } catch (error) {
     console.error('Error checking user existence:', error)
+
     throw error
   }
 }
 
-// Return user id by email
+// Return userId by email
 const getUserIdByEmail = async email => {
   try {
-    // Connect to the database
     const pool = await connectDB()
 
-    // Create a request object
     const request = pool.request()
 
-    // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
 
-    // Query the database to get user id by email
-    const result = await request.query(`SELECT userId FROM Users WHERE email = @Email`)
+    const result = await request.query(`
+      SELECT userId
+      FROM Users
+      WHERE email = @Email
+    `)
 
-    // Check if the user exists, and return the user id if found
     if (result.recordset.length === 0) {
       throw new Error('User not found')
     }
 
-    // Return userId
     return result.recordset[0].userId
   } catch (error) {
     console.error('Error getting userId by email:', error)
+
     throw error
   }
 }
 
-// Create user and returns user id
+// Create user
 const createUser = async userData => {
-  const {
-    email,
-    firstName,
-    lastName,
-    hashedPassword,
-    role,
-    requestedRole,
-    verificationStatus,
-    verificationData,
-  } = userData
+  const { email, firstName, lastName, hashedPassword } = userData
 
-  if (
-    !firstName ||
-    !lastName ||
-    !email ||
-    !hashedPassword ||
-    !role ||
-    !requestedRole ||
-    !verificationStatus
-  ) {
+  if (!email || !firstName || !lastName || !hashedPassword) {
     throw new Error('Missing required user fields')
   }
 
   let transaction
 
   try {
-    // Connect to the database
     const pool = await connectDB()
 
     transaction = new sql.Transaction(pool)
+
     await transaction.begin()
 
-    // Create a request object
     const request = new sql.Request(transaction)
 
-    // Add the parameters to the request object
     request.input('Email', sql.VarChar, email)
-    request.input('FirstName', sql.VarChar, firstName)
-    request.input('LastName', sql.VarChar, lastName)
-    request.input('Role', sql.VarChar, role)
-    request.input('RequestedRole', sql.VarChar, requestedRole)
-    request.input('VerificationStatus', sql.VarChar, verificationStatus)
-    request.input('VerificationData', sql.NVarChar(sql.MAX), JSON.stringify(verificationData || {}))
 
-    // Query the database to insert user by firstname, lastname, and email
+    request.input('FirstName', sql.VarChar, firstName)
+
+    request.input('LastName', sql.VarChar, lastName)
+
     const result = await request.query(`
-  INSERT INTO Users (
-    email,
-    firstName,
-    lastName,
-    role,
-    requestedRole,
-    verificationStatus,
-    verificationData
-  )
-  OUTPUT INSERTED.userId
-  VALUES (
-    @Email,
-    @FirstName,
-    @LastName,
-    @Role,
-    @RequestedRole,
-    @VerificationStatus,
-    @VerificationData
-  )
-`)
+      INSERT INTO Users (
+        email,
+        firstName,
+        lastName
+      )
+      OUTPUT INSERTED.userId
+      VALUES (
+        @Email,
+        @FirstName,
+        @LastName
+      )
+    `)
+
     const userId = result.recordset[0].userId
 
-    // Call createUserCredentials() to create user credentials for the user
     await createUserCredentials(userId, hashedPassword, transaction)
+
+    // Every user gets patient role
+    await addUserRoles(userId, [1], transaction)
 
     await transaction.commit()
 
     return userId
   } catch (error) {
-    // if (transaction && !transaction._aborted) {
-    //   await transaction.rollback()
-    // }
     console.error('Error creating user:', error)
+
+    if (transaction) {
+      await transaction.rollback()
+    }
+
     throw error
   }
 }
@@ -141,23 +114,29 @@ const createUser = async userData => {
 // Create user credentials
 const createUserCredentials = async (userId, hashedPassword, transaction) => {
   try {
-    // Check if there is a transaction
     if (!transaction) {
-      throw new Error('Transaction is required for createUserCredentials')
+      throw new Error('Transaction is required')
     }
-    // Create a request object
+
     const request = new sql.Request(transaction)
 
-    // Add the parameters to the request object
     request.input('UserId', sql.UniqueIdentifier, userId)
+
     request.input('HashedPassword', sql.VarChar, hashedPassword)
 
-    // Query the database to insert user credentials by user id and hashed password
-    await request.query(
-      `INSERT INTO UserCredentials (userId, hashedPassword) VALUES (@UserId, @HashedPassword)`
-    ) // NEED TO CHANGE
+    await request.query(`
+      INSERT INTO UserCredentials (
+        userId,
+        hashedPassword
+      )
+      VALUES (
+        @UserId,
+        @HashedPassword
+      )
+    `)
   } catch (error) {
     console.error('Error creating user credentials:', error)
+
     throw error
   }
 }
@@ -165,37 +144,53 @@ const createUserCredentials = async (userId, hashedPassword, transaction) => {
 // Return hashed password by email
 const getHashedPasswordByEmail = async email => {
   try {
-    // Get user id by email
     const userId = await getUserIdByEmail(email)
 
-    // Check if user exists
-    if (!userId) {
-      throw new Error('User not found')
-    }
-
-    // Connect to the database
     const pool = await connectDB()
 
-    // Create a request object
     const request = pool.request()
 
-    // Add the parameter to the request object
     request.input('UserId', sql.UniqueIdentifier, userId)
 
-    // Query the database to get hashed password by email
-    const result = await request.query(
-      `SELECT hashedPassword FROM UserCredentials WHERE userId = @UserId`
-    )
+    const result = await request.query(`
+      SELECT hashedPassword
+      FROM UserCredentials
+      WHERE userId = @UserId
+    `)
 
-    // Check if the user credentials exists, and return the hashed password if found
     if (result.recordset.length === 0) {
       throw new Error('User credentials not found')
     }
 
-    // Return hashedPassword
     return result.recordset[0].hashedPassword
   } catch (error) {
-    console.error('Error getting password hash by email:', error)
+    console.error('Error getting password hash:', error)
+
+    throw error
+  }
+}
+
+// Return all approved roles
+const getUserRoles = async userId => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('UserId', sql.UniqueIdentifier, userId)
+
+    const result = await request.query(`
+      SELECT r.roleName
+      FROM UsersRoles ur
+      JOIN Roles r
+      ON ur.roleId = r.roleId
+      WHERE ur.userId = @UserId
+    `)
+
+    return result.recordset.map(role => role.roleName)
+  } catch (error) {
+    console.error('Error getting user roles:', error)
+
     throw error
   }
 }
@@ -203,82 +198,92 @@ const getHashedPasswordByEmail = async email => {
 // Return user by id
 const getUserById = async userId => {
   try {
-    // Connect to the database
     const pool = await connectDB()
 
-    // Create a request object
     const request = pool.request()
 
-    // Add the parameter to the request object
     request.input('UserId', sql.UniqueIdentifier, userId)
 
-    // Query the database to get the user
-    const result = await request.query(`SELECT * FROM Users WHERE userId = @UserId`)
+    const result = await request.query(`
+      SELECT *
+      FROM Users
+      WHERE userId = @UserId
+    `)
 
-    // Check if the user exists, and return the user details
     if (result.recordset.length === 0) {
-      throw new Error('User credentials not found')
+      throw new Error('User not found')
     }
 
-    // Return user
-    return result.recordset[0]
+    const roles = await getUserRoles(userId)
+
+    return {
+      ...result.recordset[0],
+      roles,
+    }
   } catch (error) {
     console.error('Error getting user by id:', error)
+
     throw error
   }
 }
 
-// USER ROLES WILL BE SELECTED WITH CHECKBOXES
-// CHECKBOXES WILL APPEAR ON NEW PAGE AFTER SIGN up
-// USER COMPLETES SIGN UP PAGE -> NAVIGATED TO NEXT PAGE WHERE THEY SELECT DESIRED ROLES
-const addUserRoles = async (userId, roleIds) => {
+// Add approved roles to user
+const addUserRoles = async (userId, roleIds, existingTransaction = null) => {
   try {
-    // Connect to the database
     const pool = await connectDB()
 
-    // Ensure roleIds is an array
+    const transaction = existingTransaction || new sql.Transaction(pool)
+
+    if (!existingTransaction) {
+      await transaction.begin()
+    }
+
     const roles = Array.isArray(roleIds) ? roleIds : [roleIds]
 
-    // Start a transaction for multiple inserts
-    const transaction = new sql.Transaction(pool)
-    await transaction.begin()
+    for (const roleId of roles) {
+      const checkRequest = new sql.Request(transaction)
 
-    try {
-      for (const roleId of roles) {
+      checkRequest.input('UserId', sql.UniqueIdentifier, userId)
+
+      checkRequest.input('RoleId', sql.Int, roleId)
+
+      const checkResult = await checkRequest.query(`
+        SELECT *
+        FROM UsersRoles
+        WHERE userId = @UserId
+        AND roleId = @RoleId
+      `)
+
+      if (checkResult.recordset.length === 0) {
         const insertRequest = new sql.Request(transaction)
-        insertRequest.input('userId', sql.UniqueIdentifier, userId)
-        insertRequest.input('roleId', sql.Int, roleId)
 
-        // Check if already exists (optional)
-        const checkRequest = new sql.Request(transaction)
-        checkRequest.input('userId', sql.UniqueIdentifier, userId)
-        checkRequest.input('roleId', sql.Int, roleId)
+        insertRequest.input('UserId', sql.UniqueIdentifier, userId)
 
-        const checkResult = await checkRequest.query(`
-          SELECT * FROM UsersRoles 
-          WHERE userId = @userId AND roleId = @roleId
+        insertRequest.input('RoleId', sql.Int, roleId)
+
+        await insertRequest.query(`
+          INSERT INTO UsersRoles (
+            userId,
+            roleId
+          )
+          VALUES (
+            @UserId,
+            @RoleId
+          )
         `)
-
-        if (checkResult.recordset.length === 0) {
-          await insertRequest.query(`
-            INSERT INTO UsersRoles (userId, roleId) 
-            VALUES (@userId, @roleId)
-          `)
-        }
       }
+    }
 
+    if (!existingTransaction) {
       await transaction.commit()
+    }
 
-      return {
-        success: true,
-        message: `${roles.length} role(s) assigned successfully`,
-      }
-    } catch (error) {
-      await transaction.rollback()
-      throw error
+    return {
+      success: true,
     }
   } catch (error) {
     console.error('Error adding user roles:', error)
+
     throw error
   }
 }
@@ -286,29 +291,180 @@ const addUserRoles = async (userId, roleIds) => {
 // Return user by email
 const getUserByEmail = async email => {
   try {
-    // Connect to the database
     const pool = await connectDB()
 
-    // Create a request object
     const request = pool.request()
 
-    // Add the parameter to the request object
     request.input('Email', sql.VarChar, email)
 
-    // Query the database to get user id by email
-    const result = await request.query(`SELECT * FROM Users WHERE email = @Email`)
+    const result = await request.query(`
+      SELECT *
+      FROM Users
+      WHERE email = @Email
+    `)
 
-    // Check if the user exists, and return the user id if found
     if (result.recordset.length === 0) {
       return null
     }
 
-    // Return user
     return result.recordset[0]
   } catch (error) {
     console.error('Error getting user by email:', error)
+
     throw error
   }
 }
 
-export { userExists, createUser, getHashedPasswordByEmail, getUserById, getUserByEmail }
+// Create role application
+const createRoleApplication = async (userId, requestedRole, verificationData) => {
+  try {
+    const pool = await connectDB()
+
+    // Check existing applications
+    const pendingRequestDb = pool.request()
+
+    pendingRequestDb.input('UserId', sql.UniqueIdentifier, userId)
+
+    pendingRequestDb.input('RequestedRole', sql.VarChar, requestedRole)
+
+    const existingApplication = await pendingRequestDb.query(`
+        SELECT *
+        FROM RoleApplications
+        WHERE userId = @UserId
+        AND requestedRole = @RequestedRole
+        AND verificationStatus != 'rejected'
+      `)
+
+    if (existingApplication.recordset.length > 0) {
+      throw new Error('Role already requested or assigned')
+    }
+
+    // Check approved roles
+    const approvedRoleDb = pool.request()
+
+    approvedRoleDb.input('UserId', sql.UniqueIdentifier, userId)
+
+    approvedRoleDb.input('RequestedRole', sql.VarChar, requestedRole)
+
+    const approvedRole = await approvedRoleDb.query(`
+        SELECT *
+        FROM UsersRoles ur
+        JOIN Roles r
+        ON ur.roleId = r.roleId
+        WHERE ur.userId = @UserId
+        AND r.roleName = @RequestedRole
+      `)
+
+    if (approvedRole.recordset.length > 0) {
+      throw new Error('Role already assigned')
+    }
+
+    // Create application
+    const insertRequestDb = pool.request()
+
+    insertRequestDb.input('UserId', sql.UniqueIdentifier, userId)
+
+    insertRequestDb.input('RequestedRole', sql.VarChar, requestedRole)
+
+    insertRequestDb.input('VerificationStatus', sql.VarChar, 'pending')
+
+    insertRequestDb.input(
+      'VerificationData',
+      sql.NVarChar(sql.MAX),
+      JSON.stringify(verificationData || {})
+    )
+
+    await insertRequestDb.query(`
+      INSERT INTO RoleApplications (
+        userId,
+        requestedRole,
+        verificationStatus,
+        verificationData
+      )
+      VALUES (
+        @UserId,
+        @RequestedRole,
+        @VerificationStatus,
+        @VerificationData
+      )
+    `)
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error creating role application:', error)
+
+    throw error
+  }
+}
+
+// Return pending applications
+const getPendingVerificationRequests = async () => {
+  try {
+    const pool = await connectDB()
+
+    const result = await pool.request().query(`
+      SELECT
+        ra.applicationId AS id,
+
+        u.userId,
+        u.email,
+        u.firstName,
+        u.lastName,
+
+        ra.requestedRole,
+        ra.verificationStatus,
+        ra.verificationData
+
+      FROM RoleApplications ra
+
+      JOIN Users u
+      ON ra.userId = u.userId
+
+      WHERE ra.verificationStatus = 'pending'
+    `)
+
+    return result.recordset
+  } catch (error) {
+    console.error('Error getting pending requests:', error)
+
+    throw error
+  }
+}
+
+const getPendingVerificationRequestsByUserId = async userId => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('UserId', sql.UniqueIdentifier, userId)
+
+    const result = await request.query(`
+      SELECT requestedRole
+      FROM RoleApplications
+      WHERE userId = @UserId
+      AND verificationStatus = 'pending'
+    `)
+
+    return result.recordset
+  } catch (error) {
+    console.error('Error getting pending requests:', error)
+
+    throw error
+  }
+}
+
+export {
+  userExists,
+  createUser,
+  getHashedPasswordByEmail,
+  getUserById,
+  getUserByEmail,
+  addUserRoles,
+  getUserRoles,
+  createRoleApplication,
+  getPendingVerificationRequests,
+  getPendingVerificationRequestsByUserId,
+}
