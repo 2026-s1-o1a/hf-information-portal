@@ -121,7 +121,7 @@ function Profile({ user }: Props) {
           </div>
         </div>
 
-        {user.role === 'admin' && (
+        {user.roles?.includes('admin') && (
           <div style={{ marginTop: '30px' }}>
             <h3>Admin Panel — Verification Requests</h3>
 

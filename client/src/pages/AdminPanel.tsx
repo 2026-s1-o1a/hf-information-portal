@@ -4,7 +4,7 @@ import styles from './AdminPanel.module.css'
 
 type VerificationRequest = {
   id: string
-
+  email: string
   firstName: string
   lastName: string
 
@@ -79,21 +79,17 @@ function AdminPanel() {
               <h2>
                 {selectedRequest.firstName} {selectedRequest.lastName}
               </h2>
-
+              <strong>Email:</strong> {selectedRequest.email}
               <p>
                 <strong>Requested Role:</strong> {selectedRequest.requestedRole}
               </p>
-
               <hr />
-
               <h3>Verification Details</h3>
-
               {Object.entries(selectedRequest.verificationData).map(([key, value]) => (
                 <p key={key}>
                   <strong>{key}:</strong> {value}
                 </p>
               ))}
-
               <div className={styles.buttonGroup}>
                 <button className={styles.approveBtn}>Approve</button>
 

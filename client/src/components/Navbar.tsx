@@ -52,9 +52,9 @@ function Navbar({ user, setUser }: Props) {
 
         {user && <Link to="/surveys">Surveys</Link>}
 
-        {user?.role === 'admin' && <Link to="/admin_panel">Admin Dashboard</Link>}
+        {user?.roles?.includes('admin') && <Link to="/admin_panel">Admin Dashboard</Link>}
 
-        {user?.role === 'doctor' && <Link to="/ClinicianOnly">Clinician Dashboard</Link>}
+        {user?.roles?.includes('doctor') && <Link to="/ClinicianOnly">Clinician Dashboard</Link>}
         <a href="https://ceih.sa.gov.au/contact-us" target="_blank" rel="noopener noreferrer">
           Contact CEIH
         </a>

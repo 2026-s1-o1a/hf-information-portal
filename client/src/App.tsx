@@ -8,6 +8,7 @@ import Search from './pages/Search'
 import Login from './pages/Login'
 import AdminPanel from './pages/AdminPanel'
 import ClinicianOnly from './pages/ClinicianOnly'
+import RoleApplicationForm from './components/RoleApplicationForm'
 
 import './Theme.css'
 
@@ -25,8 +26,7 @@ export type User = {
   firstName?: string
   lastName?: string
 
-  role?: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian' | 'admin'
-
+  roles?: ('patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian' | 'admin')[]
   requestedRole?: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian'
 
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected'
@@ -34,7 +34,7 @@ export type User = {
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
-
+  const [loading, setLoading] = useState(true)
   const location = useLocation()
 
   const hideNavbarRoutes = ['/login', '/register']
@@ -48,14 +48,20 @@ function App() {
 
         setUser(response.data)
       } catch (error) {
-        console.error('Failed to load user', error)
-
         setUser(null)
+        console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
 
     loadUser()
   }, [])
+
+  // This loading is used to make authentication slower, so unique page like admin panel wont log user out when refresh
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div>
@@ -63,11 +69,8 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home user={user} />} />
-
         <Route path="/search" element={<Search />} />
-
         <Route path="/register" element={<Register setUser={setUser} />} />
-
         <Route path="/login" element={<Login setUser={setUser} />} />
 
         <Route
@@ -87,10 +90,13 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/profile"
           element={user ? <Profile user={user} /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/apply-role"
+          element={user ? <RoleApplicationForm /> : <Navigate to="/login" />}
         />
       </Routes>
     </div>
