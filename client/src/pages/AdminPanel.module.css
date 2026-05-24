@@ -26,7 +26,8 @@
 
   border-radius: 12px;
 
-  background-color: var(--primary);
+  background-color: var(--surface);
+  border-width: 20px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 

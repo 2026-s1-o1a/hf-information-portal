@@ -1,7 +1,6 @@
 import styles from './Profile.module.css'
-import logo from '../assets/logo.png'
 
-import { useState } from 'react'
+import pfp from '../assets/pfp.png'
 
 import type { User } from '../App'
 
@@ -10,188 +9,115 @@ type Props = {
 }
 
 function Profile({ user }: Props) {
-  const [users, setUsers] = useState<User[]>(() => {
-    return JSON.parse(localStorage.getItem('users') || '[]')
-  })
-
-  const updateUserVerification = (
-    email: string,
-    role: User['role'],
-    verificationStatus: 'approved' | 'rejected'
-  ) => {
-    const updatedUsers = users.map(u => {
-      if (u.email !== email) return u
-
-      return {
-        ...u,
-
-        role: verificationStatus === 'approved' ? role : 'patient',
-
-        verificationStatus,
-      }
-    })
-
-    setUsers(updatedUsers)
-
-    localStorage.setItem('users', JSON.stringify(updatedUsers))
-
-    const current = JSON.parse(localStorage.getItem('currentUser') || 'null')
-
-    if (current && current.email === email) {
-      const updatedCurrent = updatedUsers.find(u => u.email === email)
-
-      localStorage.setItem('currentUser', JSON.stringify(updatedCurrent))
-    }
-  }
-
   return (
     <div className={styles.page}>
       <div className={styles.sidebar}>
-        <h2 className={styles.title}>User Profile</h2>
+        <h2 className={styles.title}>Profile</h2>
 
         <ul className={styles.menu}>
-          <li className={styles.active}>Profile Details</li>
+          <li className={styles.active}>Account Overview</li>
+
+          <li>Edit Profile</li>
+
+          <li>Security</li>
 
           <li>Notifications</li>
 
-          <li>Subscriptions</li>
-
-          <li>Language</li>
-
           <li>Settings</li>
-
-          <li>Dashboard</li>
         </ul>
-
-        <div className={styles.logout}>Logout</div>
       </div>
 
       <div className={styles.content}>
-        <div className={styles.formSection}>
-          <div className={styles.formFields}>
-            <div className={styles.field}>
-              <label>Full Name</label>
+        <div className={styles.headerSection}>
+          <img src={pfp} alt="profile" className={styles.avatar} />
 
-              <div className={styles.inputRow}>
-                <input type="text" value={`${user.firstName} ${user.lastName}`} readOnly />
+          <div>
+            <h1>
+              {user.firstName} {user.lastName}
+            </h1>
 
-                <span className={styles.editIcon}>🖍</span>
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label>Email Address</label>
-
-              <div className={styles.inputRow}>
-                <input type="email" value={user.email} readOnly />
-
-                <span className={styles.editIcon}>🖍</span>
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label>Role</label>
-
-              <div className={styles.inputRow}>
-                <input type="text" value={user.role} readOnly />
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label>Verification Status</label>
-
-              <div className={styles.inputRow}>
-                <input type="text" value={user.verificationStatus || 'none'} readOnly />
-              </div>
-            </div>
-
-            {user.requestedRole && user.requestedRole !== 'patient' && (
-              <div className={styles.field}>
-                <label>Requested Role</label>
-
-                <div className={styles.inputRow}>
-                  <input type="text" value={user.requestedRole} readOnly />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.avatarSection}>
-            <img src={logo} alt="avatar" className={styles.avatar} />
+            <p>{user.email}</p>
           </div>
         </div>
 
-        {user.roles?.includes('admin') && (
-          <div style={{ marginTop: '30px' }}>
-            <h3>Admin Panel — Verification Requests</h3>
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Personal Information</h2>
 
-            {users
-              .filter(u => u.verificationStatus === 'pending')
-              .map(u => (
-                <div
-                  key={u.email}
-                  style={{
-                    border: '1px solid #ccc',
+            <button className={styles.editBtn}>Edit</button>
+          </div>
 
-                    padding: '15px',
+          <div className={styles.infoGrid}>
+            <div className={styles.infoCard}>
+              <label>First Name</label>
 
-                    marginBottom: '15px',
+              <p>{user.firstName}</p>
+            </div>
 
-                    borderRadius: '8px',
-                  }}
-                >
-                  <p>
-                    <b>
-                      {u.firstName} {u.lastName}
-                    </b>
-                  </p>
+            <div className={styles.infoCard}>
+              <label>Last Name</label>
 
-                  <p>{u.email}</p>
+              <p>{user.lastName}</p>
+            </div>
 
-                  <p>
-                    Requested Role: <b>{u.requestedRole}</b>
-                  </p>
+            <div className={styles.infoCard}>
+              <label>Email Address</label>
 
-                  {u.verificationData?.organisation && (
-                    <p>Organisation: {u.verificationData.organisation}</p>
-                  )}
+              <p>{user.email}</p>
+            </div>
+          </div>
+        </div>
 
-                  {u.verificationData?.workEmail && (
-                    <p>Organisation Email: {u.verificationData.workEmail}</p>
-                  )}
+        {/* Roles */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Roles</h2>
+          </div>
 
-                  {u.verificationData?.phoneNumber && (
-                    <p>Organisation Phone: {u.verificationData.phoneNumber}</p>
-                  )}
+          <div className={styles.rolesContainer}>
+            {user.roles?.map(role => (
+              <div key={role} className={styles.roleBadge}>
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </div>
+            ))}
+          </div>
+        </section>
 
-                  {u.verificationData?.ahpraNumber && (
-                    <p>ID / AHPRA: {u.verificationData.ahpraNumber}</p>
-                  )}
+        {/* Requested Roles */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2>Requested Roles</h2>
+          </div>
 
-                  {u.verificationData?.licenseNumber && (
-                    <p>License Number: {u.verificationData.licenseNumber}</p>
-                  )}
+          {user.pendingApplications?.length ? (
+            <div className={styles.pendingApplications}>
+              {user.pendingApplications?.map(application => (
+                <div key={application.requestedRole} className={styles.applicationCard}>
+                  <div className={styles.applicationTop}>
+                    <h3>
+                      {application.requestedRole === 'custodian'
+                        ? 'Content Custodian'
+                        : application.requestedRole.charAt(0).toUpperCase() +
+                          application.requestedRole.slice(1)}
+                    </h3>
 
-                  <button
-                    onClick={() =>
-                      updateUserVerification(u.email, u.requestedRole as User['role'], 'approved')
-                    }
-                  >
-                    Approve
-                  </button>
+                    <span className={styles.pendingBadge}>{application.verificationStatus}</span>
+                  </div>
 
-                  <button
-                    style={{
-                      marginLeft: '10px',
-                    }}
-                    onClick={() => updateUserVerification(u.email, 'patient', 'rejected')}
-                  >
-                    Reject
-                  </button>
+                  <div className={styles.applicationDetails}>
+                    {Object.entries(application.verificationData || {}).map(([key, value]) => (
+                      <p key={key}>
+                        <strong>{key}:</strong> {String(value)}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               ))}
-          </div>
-        )}
+            </div>
+          ) : (
+            <p>No requested roles.</p>
+          )}
+        </section>
       </div>
     </div>
   )

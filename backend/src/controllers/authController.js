@@ -112,7 +112,7 @@ const signin = async (req, res) => {
       })
     }
 
-    // Get all approved roles
+    // Get approved roles
     const roles = await getUserRoles(user.userId)
 
     // Generate JWT
@@ -162,9 +162,7 @@ const getUser = async (req, res) => {
   try {
     const roles = await getUserRoles(req.user.userId)
 
-    const pendingRequests = await getPendingVerificationRequestsByUserId(req.user.userId)
-
-    const pendingRoles = pendingRequests.map(request => request.requestedRole)
+    const pendingApplications = await getPendingVerificationRequestsByUserId(req.user.userId)
 
     res.json({
       id: req.user.userId,
@@ -177,7 +175,7 @@ const getUser = async (req, res) => {
 
       roles,
 
-      pendingRoles,
+      pendingApplications,
     })
   } catch (error) {
     console.error(error)
@@ -188,7 +186,7 @@ const getUser = async (req, res) => {
   }
 }
 
-// Apply for roles
+// Apply for additional role
 const applyForRole = async (req, res) => {
   try {
     const { requestedRole, verificationData } = req.body
@@ -227,16 +225,24 @@ const getVerificationRequests = async (req, res) => {
 
     res.status(200).json(parsedRequests)
   } catch (error) {
+    console.error(error)
+
     res.status(500).json({
       message: 'Failed to fetch requests',
     })
   }
 }
 
-// Approve application
+// Approve role application
 const approveRequest = async (req, res) => {
   try {
     const { applicationId } = req.body
+
+    if (!applicationId) {
+      return res.status(400).json({
+        message: 'Application ID is required',
+      })
+    }
 
     await approveRoleApplication(applicationId, req.user.userId)
 
@@ -253,10 +259,16 @@ const approveRequest = async (req, res) => {
   }
 }
 
-// Reject application
+// Reject role application
 const rejectRequest = async (req, res) => {
   try {
     const { applicationId } = req.body
+
+    if (!applicationId) {
+      return res.status(400).json({
+        message: 'Application ID is required',
+      })
+    }
 
     await rejectRoleApplication(applicationId, req.user.userId)
 
