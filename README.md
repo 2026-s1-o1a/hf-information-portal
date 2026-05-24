@@ -85,7 +85,7 @@ git clone https://github.com/2026-s1-o1a/hf-information-portal.git
 cd hf-information-portal
 ```
 
-## 2. Start the SQL Server database
+### 2. Start the SQL Server database
 
 From the project root:
 
@@ -98,11 +98,11 @@ The database container runs on:
 localhost,1434
 
 Default local credentials:
-
+```
 User: sa
 Password: HF123456!
 Database: DB_CEIH
-
+```
 ### 3. Run the database schema
 
 Open SSMS or Azure Data Studio and connect using:
