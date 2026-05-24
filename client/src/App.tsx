@@ -4,11 +4,13 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
-import Search from './pages/Search'
+// import Search from './pages/Search'
 import Login from './pages/Login'
 import AdminPanel from './pages/AdminPanel'
 import ClinicianOnly from './pages/ClinicianOnly'
 import RoleApplicationForm from './components/RoleApplicationForm'
+import ContentPage from './pages/ContentPage'
+import ContentDetailPage from './pages/ContentDetailPage'
 
 import './Theme.css'
 
@@ -74,10 +76,11 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home user={user} />} />
-        <Route path="/search" element={<Search />} />
+        <Route path="/search" element={<ContentPage />} />
+        <Route path="/content" element={<ContentPage />} />
+        <Route path="/content/*" element={<ContentDetailPage />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-
         <Route
           path="/admin_panel"
           element={
@@ -86,7 +89,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/ClinicianOnly"
           element={
