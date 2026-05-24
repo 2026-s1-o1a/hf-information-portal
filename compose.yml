@@ -1,48 +1,15 @@
 services:
-  umb_database:
-    container_name: umb_database
-    build:
-      context: ./Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hf-db
+    platform: linux/amd64
     environment:
-      MSSQL_SA_PASSWORD: ${DB_PASSWORD}
-      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: 'HF123456!'
     ports:
-      - '1433:1433'
-      - '1434:1434'
+      - '1434:1433'
     volumes:
-      - umb_database:/var/opt/mssql
-    networks:
-      - umbnet
-    healthcheck:
-      # This healthcheck is to make sure that the database is up and running before the umbraco container starts.
-      # It works by querying the database for the state of the umbracoDb database, ensuring it exists.
-      test: ['CMD', 'bash', '/healthcheck.sh']
-      interval: 5m
-      timeout: 5s
-      retries: 3
-      start_period: 30s # Bootstrap duration, for this duration failures does not count towards max retries.
-      start_interval: 5s # How long after the health check has started to run the healthcheck again.
-
-  umb_client:
-    container_name: umb_client
-    working_dir: /client
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    command: npm run dev -- --host 0.0.0.0
-    ports:
-      - '5174:5174'
-    volumes:
-      - ./client:/client
-      - /client/node_modules
-    depends_on:
-      - umb_database
-    networks:
-      - umbnet
-
-networks:
-  umbnet:
-    driver: bridge
+      - hf-db-data:/var/opt/mssql
 
 volumes:
-  umb_database:
+  hf-db-data:

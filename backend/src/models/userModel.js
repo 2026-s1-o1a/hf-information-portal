@@ -456,6 +456,111 @@ const getPendingVerificationRequestsByUserId = async userId => {
   }
 }
 
+const roleNameToId = {
+  patient: 1,
+  clinician: 2,
+  doctor: 3,
+  pharmacy: 4,
+  custodian: 5,
+  admin: 6,
+}
+
+// Approve role application
+const approveRoleApplication = async (applicationId, adminUserId) => {
+  let transaction
+
+  try {
+    const pool = await connectDB()
+
+    transaction = new sql.Transaction(pool)
+
+    await transaction.begin()
+
+    // Get application
+    const applicationRequest = new sql.Request(transaction)
+
+    applicationRequest.input('ApplicationId', sql.Int, applicationId)
+
+    const applicationResult = await applicationRequest.query(`
+      SELECT *
+      FROM RoleApplications
+      WHERE applicationId = @ApplicationId
+      AND verificationStatus = 'pending'
+    `)
+
+    if (applicationResult.recordset.length === 0) {
+      throw new Error('Application not found')
+    }
+
+    const application = applicationResult.recordset[0]
+
+    const roleId = roleNameToId[application.requestedRole]
+
+    // Add role to user
+    await addUserRoles(application.userId, [roleId], transaction)
+
+    // Update application
+    const updateRequest = new sql.Request(transaction)
+
+    updateRequest.input('ApplicationId', sql.Int, applicationId)
+
+    updateRequest.input('ReviewedBy', sql.UniqueIdentifier, adminUserId)
+
+    await updateRequest.query(`
+      UPDATE RoleApplications
+      SET
+        verificationStatus = 'approved',
+        reviewedBy = @ReviewedBy,
+        reviewedAt = GETDATE()
+      WHERE applicationId = @ApplicationId
+    `)
+
+    await transaction.commit()
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    if (transaction) {
+      await transaction.rollback()
+    }
+
+    console.error('Error approving application:', error)
+
+    throw error
+  }
+}
+
+// Reject role application
+const rejectRoleApplication = async (applicationId, adminUserId) => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('ApplicationId', sql.Int, applicationId)
+
+    request.input('ReviewedBy', sql.UniqueIdentifier, adminUserId)
+
+    await request.query(`
+      UPDATE RoleApplications
+      SET
+        verificationStatus = 'rejected',
+        reviewedBy = @ReviewedBy,
+        reviewedAt = GETDATE()
+      WHERE applicationId = @ApplicationId
+    `)
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error rejecting application:', error)
+
+    throw error
+  }
+}
+
 export {
   userExists,
   createUser,
@@ -467,4 +572,6 @@ export {
   createRoleApplication,
   getPendingVerificationRequests,
   getPendingVerificationRequestsByUserId,
+  approveRoleApplication,
+  rejectRoleApplication,
 }

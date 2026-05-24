@@ -9,6 +9,8 @@ import {
   createRoleApplication,
   getPendingVerificationRequests,
   getPendingVerificationRequestsByUserId,
+  approveRoleApplication,
+  rejectRoleApplication,
 } from '../models/userModel.js'
 
 import { generateToken } from '../utils/generateToken.js'
@@ -231,4 +233,53 @@ const getVerificationRequests = async (req, res) => {
   }
 }
 
-export { signup, signin, signout, getUser, applyForRole, getVerificationRequests }
+// Approve application
+const approveRequest = async (req, res) => {
+  try {
+    const { applicationId } = req.body
+
+    await approveRoleApplication(applicationId, req.user.userId)
+
+    res.status(200).json({
+      success: true,
+      message: 'Application approved',
+    })
+  } catch (error) {
+    console.error(error)
+
+    res.status(400).json({
+      message: error.message,
+    })
+  }
+}
+
+// Reject application
+const rejectRequest = async (req, res) => {
+  try {
+    const { applicationId } = req.body
+
+    await rejectRoleApplication(applicationId, req.user.userId)
+
+    res.status(200).json({
+      success: true,
+      message: 'Application rejected',
+    })
+  } catch (error) {
+    console.error(error)
+
+    res.status(400).json({
+      message: error.message,
+    })
+  }
+}
+
+export {
+  signup,
+  signin,
+  signout,
+  getUser,
+  applyForRole,
+  getVerificationRequests,
+  approveRequest,
+  rejectRequest,
+}
