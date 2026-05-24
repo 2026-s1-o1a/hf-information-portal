@@ -442,13 +442,27 @@ const getPendingVerificationRequestsByUserId = async userId => {
     request.input('UserId', sql.UniqueIdentifier, userId)
 
     const result = await request.query(`
-      SELECT requestedRole
+      SELECT
+        requestedRole,
+        verificationStatus,
+        verificationData
       FROM RoleApplications
       WHERE userId = @UserId
-      AND verificationStatus = 'pending'
+      AND verificationStatus != 'approved'
+      AND requestedRole NOT IN (
+        SELECT r.roleName
+        FROM UsersRoles ur
+        JOIN Roles r
+        ON ur.roleId = r.roleId
+        WHERE ur.userId = @UserId
+      )
     `)
 
-    return result.recordset
+    return result.recordset.map(application => ({
+      ...application,
+
+      verificationData: JSON.parse(application.verificationData || '{}'),
+    }))
   } catch (error) {
     console.error('Error getting pending requests:', error)
 

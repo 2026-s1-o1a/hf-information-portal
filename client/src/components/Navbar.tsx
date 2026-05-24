@@ -41,8 +41,6 @@ function Navbar({ user, setUser }: Props) {
       <div className={styles.navbarLeft}>
         <Link to="/" className={styles.logoLink}>
           <img src={logo} alt="HF Portal Logo" className={styles.logo} />
-
-          <span className={styles.title}>CEIH-HF Portal</span>
         </Link>
       </div>
 

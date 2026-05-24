@@ -30,6 +30,11 @@ export type User = {
   requestedRole?: 'patient' | 'clinician' | 'doctor' | 'pharmacy' | 'custodian'
 
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected'
+  pendingApplications?: {
+    requestedRole: string
+    verificationStatus: string
+    verificationData: Record<string, string>
+  }[]
 }
 
 function App() {
