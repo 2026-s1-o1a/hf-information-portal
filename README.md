@@ -2,70 +2,202 @@
 
 ## Project Overview
 
-The HF Information Portal is a web-based platform designed to centralise heart failure information for patients, clinicians and the general public.
+The Heart Failure Information Portal is a web-based platform designed to centralise heart failure information for patients, clinicians, content custodians and the general public.
 
-It provides access to reliable resources, guidelines and services through a simple and user-friendly interface. The system aims to improve accessibility to healthcare information and support informed decision-making.
+The system provides access to healthcare resources through a React frontend, an Express backend, a Microsoft SQL Server database and Umbraco content integration. It supports user authentication, role-based access control, role application workflows and dynamic content display through the Umbraco Delivery API.
 
 ## Live Demo
 
-[View the application]https://2026-s1-o1a.github.io/hf-information-portal/
+[View the application](https://2026-s1-o1a.github.io/hf-information-portal/)
 
-## Workflow Guide
+## Main Features
 
-### 1. Clone the repo
+- User registration and login
+- JWT-based authentication using HTTP-only cookies
+- Role-based access control
+- Multi-role user support
+- Admin approval workflow for role applications
+- User profile page showing roles and requested roles
+- Umbraco content search and content detail pages
+- Homepage content fetched from Umbraco
+- Microsoft SQL Server database support through Docker
+
+## Tech Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS Modules
+- Axios
+- React Router
+
+### Backend
+
+- Node.js
+- Express.js
+- Microsoft SQL Server
+- JWT authentication
+- bcrypt password hashing
+
+### CMS
+
+- Umbraco Delivery API
+- Vite proxy for local Umbraco API requests
+
+### Database
+
+- Microsoft SQL Server 2022
+- Docker Compose
+
+## Project Structure
+
+```bash
+hf-information-portal/
+├── backend/          # Express backend API
+├── client/           # React frontend
+├── database/         # Database schema/scripts
+├── compose.yml       # Docker SQL Server setup
+└── README.md
+```
+
+## Setup Guide
+
+### Prerequisites
+
+Make sure the following tools are installed:
+
+- Node.js
+- npm
+- Docker Desktop
+- SQL Server Management Studio or Azure Data Studio
+- Git
+
+Umbraco content integration also requires access to a running Umbraco CMS server.
+
+---
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/2026-s1-o1a/hf-information-portal.git
 cd hf-information-portal
 ```
 
-### 2. Change directory to frontend/ backend
+## 2. Start the SQL Server database
+
+From the project root:
 
 ```bash
-cd client
+docker compose up -d
 ```
 
-or
+The database container runs on:
+
+localhost,1434
+
+Default local credentials:
+
+User: sa
+Password: HF123456!
+Database: DB_CEIH
+
+### 3. Run the database schema
+
+Open SSMS or Azure Data Studio and connect using:
+
+```
+Server: localhost,1434
+Authentication: SQL Server Authentication
+User: sa
+Password: HF123456!
+```
+
+Schema in:
+
+database/schema.sql
+
+### 4. Set up backend environment variables
+
+Create a .env file inside the backend/ folder:
+
+```
+DB_SERVER=localhost
+DB_PORT=1434
+DB_DATABASE=DB_CEIH
+
+DB_USER=sa
+DB_PASSWORD=HF123456!
+
+NODE_ENV=development
+
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=7d
+```
+
+### 5. Run the backend
+
+Open a terminal:
 
 ```bash
 cd backend
-```
-
-### 3. Install dependencies and run dev server in both frontend and backend
-
-```bash
 npm install
 npm run dev
 ```
 
-### 3. GitHub workflow
+The backend runs on:
 
-Always create a new branch from `main` before starting work:
+http://localhost:3000
+
+### 6. Run the frontend
+
+Open another terminal:
 
 ```bash
-git checkout main
-git pull origin main
-git checkout -b feature/your-feature-name
+cd client
+npm install
+npm run dev
 ```
 
-Open a Pull Request (PR):
+The frontend usually runs on:
 
-- Open a Pull Request from your branch → main
-- Add a clear description of your changes
-- Ensure your code works locally
-- Merge into main
+http://localhost:5173
 
-### Important Notes:
+Or use port 5173 if 5173 is already in use
 
-- Do NOT push directly to main
-- Always work on a separate branch
-- Keep commits clear and meaningful
-- Pull latest changes before starting new work
+### 7. Umbraco content integration
 
-## Team Member
+The frontend fetches Umbraco content through the Vite proxy in client/vite.config.ts.
 
-Casey Faggion
-Jack Klenke
-Thanh Nguyen
-Christopher Yim
-Peter Trinh
+The expected local Umbraco server is:
+
+http://localhost:58609
+
+Frontend requests such as:
+
+fetch('/umbraco/delivery/api/v2/content')
+
+are forwarded to:
+
+http://localhost:58609/umbraco/delivery/api/v2/content
+
+The Umbraco CMS must be running separately for live content to appear on the homepage and content pages.
+
+### 8. Recommended local development setup
+
+```bash
+# Terminal 1 - Database
+docker compose up -d
+
+# Terminal 2 - Backend
+cd backend
+npm run dev
+
+# Terminal 3 - Frontend
+cd client
+npm run dev
+
+# Terminal 4 - Umbraco CMS
+Run the Umbraco server separately if available
+```
