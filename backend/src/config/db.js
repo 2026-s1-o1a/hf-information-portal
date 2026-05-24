@@ -2,19 +2,17 @@ import sql from 'mssql'
 import dotenv from 'dotenv'
 
 dotenv.config()
+
 const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-
-  driver: process.env.DB_DRIVER,
-
-  port: 1433,
+  port: Number(process.env.DB_PORT || 1433),
 
   options: {
+    encrypt: false,
     trustServerCertificate: true,
-    trustedConnection: false,
   },
 
   pool: {
@@ -29,10 +27,8 @@ const config = {
 
 let pool = null
 
-// Connect to database
 const connectDB = async () => {
   try {
-    // Reuse existing pool if already connected
     if (pool?.connected) {
       return pool
     }
@@ -50,7 +46,6 @@ const connectDB = async () => {
   }
 }
 
-// Close database connection
 const disconnectDB = async () => {
   try {
     if (pool) {

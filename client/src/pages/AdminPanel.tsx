@@ -46,6 +46,58 @@ function AdminPanel() {
     fetchRequests()
   }, [])
 
+  const handleApprove = async () => {
+    try {
+      if (!selectedRequest) return
+
+      await axios.post(
+        'http://localhost:3000/api/auth/approve-request',
+        {
+          applicationId: selectedRequest.id,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+
+      alert('Application approved')
+
+      setRequests(prev => prev.filter(request => request.id !== selectedRequest.id))
+
+      setSelectedRequest(null)
+    } catch (error) {
+      console.error(error)
+
+      alert('Failed to approve application')
+    }
+  }
+
+  const handleReject = async () => {
+    try {
+      if (!selectedRequest) return
+
+      await axios.post(
+        'http://localhost:3000/api/auth/reject-request',
+        {
+          applicationId: selectedRequest.id,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+
+      alert('Application rejected')
+
+      setRequests(prev => prev.filter(request => request.id !== selectedRequest.id))
+
+      setSelectedRequest(null)
+    } catch (error) {
+      console.error(error)
+
+      alert('Failed to reject application')
+    }
+  }
+
   return (
     <div className={styles.container}>
       <h1>Admin Dashboard</h1>
@@ -91,9 +143,13 @@ function AdminPanel() {
                 </p>
               ))}
               <div className={styles.buttonGroup}>
-                <button className={styles.approveBtn}>Approve</button>
+                <button className={styles.approveBtn} onClick={handleApprove}>
+                  Approve
+                </button>
 
-                <button className={styles.rejectBtn}>Reject</button>
+                <button className={styles.rejectBtn} onClick={handleReject}>
+                  Reject
+                </button>
               </div>
             </>
           ) : (

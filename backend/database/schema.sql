@@ -1,5 +1,11 @@
+--------------------------------------------------
 -- Create Database
-CREATE DATABASE DB_CEIH;
+--------------------------------------------------
+
+IF DB_ID('DB_CEIH') IS NULL
+BEGIN
+    CREATE DATABASE DB_CEIH;
+END
 GO
 
 USE DB_CEIH;
@@ -14,6 +20,7 @@ CREATE TABLE Users
     userId UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 
     firstName VARCHAR(100) NOT NULL,
+
     lastName VARCHAR(100) NOT NULL,
 
     email VARCHAR(255) NOT NULL,
@@ -30,6 +37,7 @@ CREATE TABLE Users
 
     CONSTRAINT Users_UK UNIQUE (email)
 );
+GO
 
 --------------------------------------------------
 -- User Credentials Table
@@ -51,6 +59,7 @@ CREATE TABLE UserCredentials
 
     CONSTRAINT UserCredentials_UK UNIQUE (userId)
 );
+GO
 
 --------------------------------------------------
 -- Roles Table
@@ -66,6 +75,7 @@ CREATE TABLE Roles
 
     CONSTRAINT Roles_UK UNIQUE (roleName)
 );
+GO
 
 --------------------------------------------------
 -- User Roles Junction Table
@@ -89,6 +99,7 @@ CREATE TABLE UsersRoles
         FOREIGN KEY (roleId)
         REFERENCES Roles(roleId)
 );
+GO
 
 --------------------------------------------------
 -- Role Applications Table
@@ -122,6 +133,7 @@ CREATE TABLE RoleApplications
         FOREIGN KEY (reviewedBy)
         REFERENCES Users(userId)
 );
+GO
 
 --------------------------------------------------
 -- Seed Roles
@@ -136,5 +148,4 @@ VALUES
     ('pharmacy'),
     ('custodian'),
     ('admin');
-
 GO
