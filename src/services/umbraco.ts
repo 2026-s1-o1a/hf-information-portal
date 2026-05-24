@@ -19,13 +19,20 @@ export async function getPosts() {
 
   const data = await res.json();
 
-  return data.items.map((item: any) => ({
-    id: item.id,
-    title: item.properties?.pageTitle || item.name,
-    body: item.properties?.overview || "",
-    route: item.route,
-    properties: item.properties
-  }));
+  return data.items
+  .filter((item: any) => item.route?.path && item.route.path !== '/')
+  .map((item: any) => {
+    return {
+      id: item.id,
+      title: item.properties?.pageTitle || item.name,
+      body: item.properties?.overview || "",
+      route: item.route,
+      contentType: item.contentType,
+      properties: item.properties,
+      createDate: item.createDate,
+      updateDate: item.updateDate
+    }
+  });
 }
 
 export async function getContentBySlug(slug: string){

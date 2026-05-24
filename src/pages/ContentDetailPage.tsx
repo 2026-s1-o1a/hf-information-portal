@@ -6,6 +6,7 @@ import { getContentBySlug } from "../services/umbraco";
 import ConditionTemplate from "../templates/ConditionTemplate";
 import ContentTemplate from "../templates/ContentTemplate";
 import VideoTemplate from "../templates/VideoTemplate";
+import NewsTemplate from "../templates/NewsTemplate";
 
 function ContentDetailPage() {
   const { slug } = useParams();
@@ -49,7 +50,12 @@ function ContentDetailPage() {
     case "videoPage":
         return (
         <VideoTemplate content={content} />
-    )
+    );
+
+    case "newsPage":
+      return (
+        <NewsTemplate content={content} />
+      );
 
     default:
       return <p>Unknown content type</p>;

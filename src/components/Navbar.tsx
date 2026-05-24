@@ -23,8 +23,10 @@ function Navbar({ user, setUser }: Props) {
   return (
     <div className={styles.navbar}>
       <div className={styles.navbarLeft}>
-        <img src={logo} alt="logo" className={styles.logo} />
-        <span className={styles.title}>HF Portal</span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+          <img src={logo} alt="logo" className={styles.logo} />
+          <span className={styles.title}>HF Portal</span>
+        </Link>
       </div>
 
       <div className={styles.navbarCenter}>

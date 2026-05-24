@@ -1,34 +1,47 @@
-function VideoTemplate({ content }: any) {
-    const props = content.properties;
-  
-    return (
-      <main>
-        <h1>{props.pageTitle}</h1>
-  
-        <div
-          dangerouslySetInnerHTML={{
-            __html: props.overview
-          }}
-        />
+import styles from './Templates.module.css'
 
-        {props.description && (
-        <div
-            dangerouslySetInnerHTML={{
-            __html: props.description?.markup
-            }}
-        />
-        )}
-  
-        {props.videoUrl && (
-          <iframe
-            width="560"
-            height="315"
-            src={props.videoUrl}
-            title="Video"
-          />
-        )}
-      </main>
-    );
+function getEmbedUrl(url: string) {
+  try {
+    const urlObj = new URL(url)
+    const videoId = urlObj.searchParams.get('v')
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`
+    }
+    // already an embed URL or short URL like youtu.be
+    if (url.includes('youtu.be/')) {
+      const id = url.split('youtu.be/')[1]
+      return `https://www.youtube.com/embed/${id}`
+    }
+    return url
+  } catch {
+    return url
   }
-  
-  export default VideoTemplate;
+}
+
+function VideoTemplate({ content }: any) {
+  const props = content.properties;
+  return (
+    <main className={styles.page}>
+      <span className={styles.badge}>Video</span>
+      <h1 className={styles.title}>{props.pageTitle}</h1>
+
+      {props.overview && <p className={styles.overview}>{props.overview}</p>}
+
+      {props.description?.markup && (
+        <section className={styles.section}>
+          <div dangerouslySetInnerHTML={{ __html: props.description.markup }} />
+        </section>
+      )}
+
+      {props.videoUrl && (
+        <section className={styles.section}>
+          <div className={styles.videoWrapper}>
+            <iframe src={getEmbedUrl(props.videoUrl)} title="Video" allowFullScreen />
+          </div>
+        </section>
+      )}
+
+    </main>
+  );
+}
+export default VideoTemplate;

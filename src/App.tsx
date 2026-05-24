@@ -2,7 +2,6 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
-import Search from './pages/Search'
 import Login from './pages/Login'
 import ContentPage from './pages/ContentPage'
 import ContentDetailPage from './pages/ContentDetailPage'
@@ -34,7 +33,6 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
 
         <Route path="/register" element={<Register setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
