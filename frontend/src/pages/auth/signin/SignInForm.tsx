@@ -1,51 +1,43 @@
-import { useState } from "react";
-import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import styles from '../../Register.module.css';
 
-interface SignInFormProps {
+interface LoginFormProps {
   loadUserProfile: () => void;
 }
 
-function SignInForm({ loadUserProfile }: SignInFormProps) {
+function SignInForm({ loadUserProfile }: LoginFormProps) {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  const navigate = useNavigate();
-
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();  // Prevent default form submission
+    event.preventDefault();
 
-    // Simple validation check
     if (!formData.email || !formData.password) {
-      alert("Please fill out all fields.");
+      alert('Please fill out all fields.');
       return;
     }
 
     try {
-
-      // Get JWT Cookie and Sign up
       const response = await axios.post('http://localhost:3000/api/auth/signin', formData, {
-        withCredentials: true,  // Allow cookies (JWT) to be sent and received
+        withCredentials: true,
       });
 
-      // If sign up is successful navigate to home
       if (response.data.success) {
         console.log('Sign-in successful');
-        await loadUserProfile();
+        await loadUserProfile();  // Refresh user state
         navigate('/');
       } else {
         alert('Sign-in failed');
       }
-
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-
-        // Backend error message
-        alert(error.response?.data.message || 'Error submitting form');
-
+        alert(error.response?.data.message || 'Error logging in');
       } else {
         console.error('Unexpected error:', error);
         alert('An unexpected error occurred. Please try again.');
@@ -53,28 +45,55 @@ function SignInForm({ loadUserProfile }: SignInFormProps) {
     }
   };
 
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
-      ...prevData,  // previous data form data
-      [name]: value, // Update the specific field based on name
+      ...prevData,
+      [name]: value
     }));
   };
 
   return (
-    <>
-      <h1>SIGN IN</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-        <br />
-        <input type="text" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-        <br />
-        <br />
-        <input type="submit" value="Sign-in" />
-      </form>
-    </>
+    <form onSubmit={handleSubmit}>
+      <div className={styles.formGroup}>
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter your password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <button type="submit" className={styles.registerBtn}>
+        Log In
+      </button>
+
+      <p>Don't have an account?</p>
+
+      <button
+        type="button"
+        className={styles.registerBtn}
+        onClick={() => navigate('/signup')}
+      >
+        Create One
+      </button>
+    </form>
   );
-};
+}
 
 export default SignInForm;
