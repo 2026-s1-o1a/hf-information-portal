@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/umbraco': {
-        target: 'http://localhost:58609',
+        target: 'http://localhost:39327',
         changeOrigin: true,
         secure: false,
       },

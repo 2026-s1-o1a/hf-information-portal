@@ -11,5 +11,28 @@ services:
     volumes:
       - hf-db-data:/var/opt/mssql
 
+  umbraco-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: umbraco-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+     - "1433:1433"
+    volumes:
+      - umbraco-db-data:/var/opt/mssql
+  
+  # This sidecar container will initialize the database after a delay to ensure SQL Server is ready.
+  db_init_sidecar:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - umbraco-db
+    entrypoint: >
+      bash -c "
+      sleep 30;
+      /opt/mssql-tools/bin/sqlcmd -S umbraco-db -U sa -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE umbraco_information'"
+    
+
 volumes:
   hf-db-data:
+  umbraco-db-data:
