@@ -12,46 +12,12 @@ import {
   approveRoleApplication,
   rejectRoleApplication,
   updateUserById,
+  updateProfileImage,
+  getProfileImageById,
 } from '../models/userModel.js'
 
 import { generateToken } from '../utils/generateToken.js'
-
-//update authenticated user's profile
-const updateUser = async (req, res) => {
-  try {
-    const {firstName, lastName, email} = req.body
-    
-    if (!firstName, !lastName, !email) {
-      return res.status(400).json({
-        message: 'At least one field is required.',
-      })
-    }
-
-    const updatedUser = await updateUserById(req.user.userId, {
-      firstName,
-      lastName,
-      email,
-    })
-
-    res.status(200).json ({
-      success: true,
-
-      user: {
-        id: updatedUser.userId,
-        email: updatedUser.email,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        roles: updatedUser.roles,
-      }
-    })
-  } catch (error) {
-    console.error(error)
-
-    return res.status(400).json({
-      message: error.message
-    })
-  }
-}
+import { detectImageMimeType } from '../utils/detectImageMimeType.js'
 
 // Create normal patient account
 const signup = async (req, res) => {
@@ -224,6 +190,91 @@ const getUser = async (req, res) => {
   }
 }
 
+// Update authenticated user's profile
+const updateUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email } = req.body
+
+    if (!firstName && !lastName && !email) {
+      return res.status(400).json({
+        message: 'At least one field is required',
+      })
+    }
+
+    const updatedUser = await updateUserById(req.user.userId, {
+      firstName,
+      lastName,
+      email,
+    })
+
+    res.status(200).json({
+      success: true,
+
+      user: {
+        id: updatedUser.userId,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        roles: updatedUser.roles,
+      },
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(400).json({
+      message: error.message,
+    })
+  }
+}
+
+// Upload/replace authenticated user's profile image
+const uploadProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: 'No image file provided',
+      })
+    }
+
+    await updateProfileImage(req.user.userId, req.file.buffer)
+
+    res.status(200).json({
+      success: true,
+    })
+  } catch (error) {
+    console.error(error)
+
+    res.status(500).json({
+      message: 'Failed to upload image',
+    })
+  }
+}
+
+// Serve a user's profile image
+const getProfileImage = async (req, res) => {
+  try {
+    const imageBuffer = await getProfileImageById(req.params.userId)
+
+    if (!imageBuffer) {
+      return res.status(404).json({
+        message: 'No profile image set',
+      })
+    }
+
+    const mimeType = detectImageMimeType(imageBuffer) || 'image/jpeg'
+
+    res.set('Content-Type', mimeType)
+    res.set('Cache-Control', 'no-cache')
+    res.send(imageBuffer)
+  } catch (error) {
+    console.error(error)
+
+    res.status(500).json({
+      message: 'Failed to load image',
+    })
+  }
+}
+
 // Apply for additional role
 const applyForRole = async (req, res) => {
   try {
@@ -328,9 +379,11 @@ export {
   signin,
   signout,
   getUser,
+  updateUser,
+  uploadProfileImage,
+  getProfileImage,
   applyForRole,
   getVerificationRequests,
   approveRequest,
   rejectRequest,
-  updateUser
 }

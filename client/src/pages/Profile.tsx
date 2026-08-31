@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import styles from './Profile.module.css'
 
-import pfp from '../assets/pfp.png'
+import defaultPfp from '../assets/pfp.png'
 
 import type { User } from '../App'
 
@@ -12,7 +12,9 @@ type Props = {
 
 type View = 'overview' | 'edit'
 
-function Profile({ user, onUpdateUser }: Props) { 
+const API_BASE = 'http://localhost:3000'
+
+function Profile({ user, onUpdateUser }: Props) {
   const [view, setView] = useState<View>('overview')
 
   const [form, setForm] = useState({
@@ -24,6 +26,15 @@ function Profile({ user, onUpdateUser }: Props) {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const [avatarVersion, setAvatarVersion] = useState(Date.now())
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [imageError, setImageError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const avatarSrc =
+    avatarPreview || `${API_BASE}/api/auth/profile-image/${user.id}?v=${avatarVersion}`
+
   function openEdit() {
     setForm({
       firstName: user.firstName,
@@ -31,6 +42,7 @@ function Profile({ user, onUpdateUser }: Props) {
       email: user.email,
     })
     setError(null)
+    setImageError(null)
     setView('edit')
   }
 
@@ -41,7 +53,7 @@ function Profile({ user, onUpdateUser }: Props) {
     setError(null)
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/me', {
+      const res = await fetch(`${API_BASE}/api/auth/me`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -60,6 +72,58 @@ function Profile({ user, onUpdateUser }: Props) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+
+    if (!file) return
+
+    setImageError(null)
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+
+    if (!allowedTypes.includes(file.type)) {
+      setImageError('Please choose a JPEG, PNG, or WebP image.')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError('Image must be smaller than 5MB.')
+      return
+    }
+
+    setAvatarPreview(URL.createObjectURL(file))
+    uploadImage(file)
+  }
+
+  async function uploadImage(file: File) {
+    setIsUploadingImage(true)
+    setImageError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('profileImage', file)
+
+      const res = await fetch(`${API_BASE}/api/auth/me/profile-image`, {
+        method: 'PATCH',
+        credentials: 'include',
+        body: formData,
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to upload image')
+      }
+
+      setAvatarVersion(Date.now())
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Something went wrong')
+      setAvatarPreview(null)
+    } finally {
+      setIsUploadingImage(false)
     }
   }
 
@@ -92,7 +156,15 @@ function Profile({ user, onUpdateUser }: Props) {
         {view === 'overview' && (
           <>
             <div className={styles.headerSection}>
-              <img src={pfp} alt="profile" className={styles.avatar} />
+              <img
+                src={avatarSrc}
+                alt="profile"
+                className={styles.avatar}
+                onError={e => {
+                  e.currentTarget.onerror = null
+                  e.currentTarget.src = defaultPfp
+                }}
+              />
 
               <div>
                 <h1>
@@ -197,6 +269,31 @@ function Profile({ user, onUpdateUser }: Props) {
             </div>
 
             {error && <p className={styles.error}>{error}</p>}
+
+            <div className={styles.avatarEditRow}>
+              <img src={avatarSrc} alt="profile preview" className={styles.avatar} />
+
+              <div>
+                <button
+                  type="button"
+                  className={styles.editBtn}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                >
+                  {isUploadingImage ? 'Uploading...' : 'Change Photo'}
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className={styles.hiddenFileInput}
+                  onChange={handleImageSelect}
+                />
+
+                {imageError && <p className={styles.error}>{imageError}</p>}
+              </div>
+            </div>
 
             <div className={styles.infoGrid}>
               <div className={styles.infoCard}>
