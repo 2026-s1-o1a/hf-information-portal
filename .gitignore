@@ -23,3 +23,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# GOOGLE MAPS API KEY - DO NOT PUBLISH
+VITE_GOOGLE_MAPS_API_KEY=AIzaSyCYhgUmsG3R20HhuB3Jk4f8OzLb9u5Zih0

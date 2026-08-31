@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import type { User } from '../App'
 import { getPosts } from '../services/umbraco'
 import type { Post } from '../services/umbraco'
+import ClinicMap from '../components/ClinicMap'
 
 type Props = {
   user: User | null
@@ -130,6 +131,8 @@ function Home({ user }: Props) {
           )}
         </div>
       </section>
+
+      <ClinicMap />
 
       <section className={styles.cardsSection}>
         <h2>Latest Content from Umbraco</h2>
