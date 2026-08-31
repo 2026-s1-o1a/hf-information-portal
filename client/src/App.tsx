@@ -99,7 +99,9 @@ function App() {
         />
         <Route
           path="/profile"
-          element={user ? <Profile user={user} /> : <Navigate to="/login" />}
+          element={
+            user ? <Profile user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />
+          }
         />
         <Route
           path="/apply-role"

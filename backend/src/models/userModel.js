@@ -573,6 +573,58 @@ const rejectRoleApplication = async (applicationId, adminUserId) => {
 
     throw error
   }
+  
+}
+
+//update's users basic info
+const updateUserById = async (userId, updates) => {
+  const {firstName, lastName, email } = updates
+
+  if (!firstName && !lastName && !email) {
+    throw new Error('No fields provided to update')
+  }
+
+  try {
+    const pool = await connectDB()
+
+    //check changed email isnt taken
+    if (email) {
+      const checkRequest = pool.request()
+      checkRequest.input('Email', sql.VarChar, email)
+      checkRequest.input('UserId', sql.UniqueIdentifier, userId)
+
+      const existing = await checkRequest.query(`
+        SELECT 1
+        FROM Users
+        WHERE email = @Email
+        AND userId != @UserId
+        `)
+
+        if (existing.recordset.length > 0) {
+          throw new Error('Email already in use')
+        }
+    }
+
+    const request = pool.request()
+
+    request.input('UserId', sql.UniqueIdentifier, userId)
+    request.input('FirstName', sql.VarChar, firstName)
+    request.input('LastName', sql.VarChar, lastName)
+    request.input('Email', sql.VarChar, email)
+
+    await request.query(`
+      UPDATE Users
+      SET
+        firstName = COALESCE(@FirstName, firstName),
+        lastName = COALESCE(@LastName, lastName),
+        email = COALESCE(@Email, email)
+      WHERE userId = @UserId
+      `)
+
+      return await getUserById(userId)
+  } catch (error) {
+    console.error('Error updating user: ' + error)
+  }
 }
 
 export {
@@ -588,4 +640,5 @@ export {
   getPendingVerificationRequestsByUserId,
   approveRoleApplication,
   rejectRoleApplication,
+  updateUserById
 }
