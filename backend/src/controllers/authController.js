@@ -11,9 +11,47 @@ import {
   getPendingVerificationRequestsByUserId,
   approveRoleApplication,
   rejectRoleApplication,
+  updateUserById,
 } from '../models/userModel.js'
 
 import { generateToken } from '../utils/generateToken.js'
+
+//update authenticated user's profile
+const updateUser = async (req, res) => {
+  try {
+    const {firstName, lastName, email} = req.body
+    
+    if (!firstName, !lastName, !email) {
+      return res.status(400).json({
+        message: 'At least one field is required.',
+      })
+    }
+
+    const updatedUser = await updateUserById(req.user.userId, {
+      firstName,
+      lastName,
+      email,
+    })
+
+    res.status(200).json ({
+      success: true,
+
+      user: {
+        id: updatedUser.userId,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        roles: updatedUser.roles,
+      }
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(400).json({
+      message: error.message
+    })
+  }
+}
 
 // Create normal patient account
 const signup = async (req, res) => {
@@ -294,4 +332,5 @@ export {
   getVerificationRequests,
   approveRequest,
   rejectRequest,
+  updateUser
 }
