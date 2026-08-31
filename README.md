@@ -136,6 +136,11 @@ JWT_SECRET=your-secret-key
 JWT_EXPIRES_IN=7d
 ```
 
+Create a .env file inside the client/ folder:
+```
+# GOOGLE MAPS API KEY - DO NOT PUBLISH
+VITE_GOOGLE_MAPS_API_KEY=XXXXXXXXXXXXXX
+```
 ### 5. Run the backend
 
 Open a terminal:
