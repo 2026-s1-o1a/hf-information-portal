@@ -77,6 +77,18 @@
   background-color: white;
 }
 
+.avatarEditRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  margin-bottom: 2rem;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
 .headerSection h1 {
   margin: 0;
 

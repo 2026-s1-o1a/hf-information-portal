@@ -576,9 +576,9 @@ const rejectRoleApplication = async (applicationId, adminUserId) => {
   
 }
 
-//update's users basic info
+// Update user's basic info
 const updateUserById = async (userId, updates) => {
-  const {firstName, lastName, email } = updates
+  const { firstName, lastName, email } = updates
 
   if (!firstName && !lastName && !email) {
     throw new Error('No fields provided to update')
@@ -587,9 +587,10 @@ const updateUserById = async (userId, updates) => {
   try {
     const pool = await connectDB()
 
-    //check changed email isnt taken
+    // If email is changing, make sure it's not taken by someone else
     if (email) {
       const checkRequest = pool.request()
+
       checkRequest.input('Email', sql.VarChar, email)
       checkRequest.input('UserId', sql.UniqueIdentifier, userId)
 
@@ -598,11 +599,11 @@ const updateUserById = async (userId, updates) => {
         FROM Users
         WHERE email = @Email
         AND userId != @UserId
-        `)
+      `)
 
-        if (existing.recordset.length > 0) {
-          throw new Error('Email already in use')
-        }
+      if (existing.recordset.length > 0) {
+        throw new Error('Email already in use')
+      }
     }
 
     const request = pool.request()
@@ -619,11 +620,64 @@ const updateUserById = async (userId, updates) => {
         lastName = COALESCE(@LastName, lastName),
         email = COALESCE(@Email, email)
       WHERE userId = @UserId
-      `)
+    `)
 
-      return await getUserById(userId)
+    return await getUserById(userId)
   } catch (error) {
-    console.error('Error updating user: ' + error)
+    console.error('Error updating user:', error)
+
+    throw error
+  }
+}
+
+// Update user's profile image
+const updateProfileImage = async (userId, imageBuffer) => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('UserId', sql.UniqueIdentifier, userId)
+    request.input('ProfileImage', sql.VarBinary(sql.MAX), imageBuffer)
+
+    await request.query(`
+      UPDATE Users
+      SET profileImage = @ProfileImage
+      WHERE userId = @UserId
+    `)
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating profile image:', error)
+
+    throw error
+  }
+}
+
+// Get user's profile image
+const getProfileImageById = async userId => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('UserId', sql.UniqueIdentifier, userId)
+
+    const result = await request.query(`
+      SELECT profileImage
+      FROM Users
+      WHERE userId = @UserId
+    `)
+
+    if (result.recordset.length === 0) {
+      throw new Error('User not found')
+    }
+
+    return result.recordset[0].profileImage
+  } catch (error) {
+    console.error('Error getting profile image:', error)
+
+    throw error
   }
 }
 
@@ -640,5 +694,8 @@ export {
   getPendingVerificationRequestsByUserId,
   approveRoleApplication,
   rejectRoleApplication,
-  updateUserById
+  updateUserById,
+  getProfileImageById,
+  updateProfileImage
+  
 }
