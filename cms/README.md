@@ -55,6 +55,18 @@ On first run against a fresh database, follow the install wizard at `/umbraco`. 
 
 Note the URL it prints (e.g. `http://localhost:58609`) — the frontend's dev server proxies API calls here.
 
+If the database connection fails, ensure you connect to it via docker exec
+then run the following.
+```bash
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YOUR_PASSWORD' -NO
+```
+
+Then within docker:
+```bash
+CREATE DATABASE UmbracoCms;
+GO
+```
+
 ## 4. Start the frontend
 
 In a separate terminal tab:
