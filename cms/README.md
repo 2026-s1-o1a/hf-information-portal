@@ -18,6 +18,7 @@ docker start umbraco-sql
 ```
 
 If the container doesn't exist yet on your machine, create it once:
+Make sure to change "YOUR_PASSWORD" to your own.
 
 ```bash
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YOUR_PASSWORD" \
