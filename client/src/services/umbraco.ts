@@ -42,6 +42,14 @@ type UmbracoApiResponse = {
   items: UmbracoApiItem[]
 }
 
+type Survey = {
+  id: string
+  name: string
+  createdBy: number
+  created: string
+  updated: string
+}
+
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 
 // ---- Mock data, used only when VITE_USE_MOCK_DATA=true ----
@@ -179,15 +187,17 @@ export async function getContentBySlug(slug: string) {
   return data
 }
 
-export async function getFormIds(): Promise<string[]> {
+export async function getForms(): Promise<Survey[]> {
   const res = await fetch('https://localhost:44343/api/forms')
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch form IDs: ${res.status}`)
+    throw new Error(`Failed to fetch forms: ${res.status}`)
   }
 
   return res.json()
 }
+
+
 
 
 
