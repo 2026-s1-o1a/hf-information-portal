@@ -15,6 +15,10 @@ function ContentPage() {
 
   const [sort, setSort] = useState('newest')
 
+  const [groupByYear, setGroupByYear] = useState(false)
+
+  const [selectedYear, setSelectedYear] = useState('all')
+
   const [results, setResults] = useState<Post[]>([])
 
   const [loading, setLoading] = useState(false)
@@ -49,6 +53,8 @@ function ContentPage() {
 
       setResults(filtered)
 
+      setSelectedYear('all')
+
       setSearched(true)
     } catch (error) {
       console.error('Search failed:', error)
@@ -75,6 +81,63 @@ function ContentPage() {
         return contentType
     }
   }
+
+  const getYearLabel = (createDate?: string) => {
+    if (!createDate) return 'Unknown'
+
+    const year = new Date(createDate).getFullYear()
+
+    return isNaN(year) ? 'Unknown' : String(year)
+  }
+
+  const sortYearsDescending = (years: string[]) => {
+    return years.sort((a, b) => {
+      if (a === 'Unknown') return 1
+      if (b === 'Unknown') return -1
+
+      return Number(b) - Number(a)
+    })
+  }
+
+  const groupResultsByYear = (items: Post[]) => {
+    const groups = new Map<string, Post[]>()
+
+    for (const item of items) {
+      const year = getYearLabel(item.createDate)
+
+      if (!groups.has(year)) {
+        groups.set(year, [])
+      }
+
+      groups.get(year)!.push(item)
+    }
+
+    const sortedYears = sortYearsDescending(Array.from(groups.keys()))
+
+    return sortedYears.map(year => [year, groups.get(year)!] as [string, Post[]])
+  }
+
+  const availableYears = groupByYear ? sortYearsDescending(
+    Array.from(new Set(results.map(item => getYearLabel(item.createDate))))
+  ) : []
+
+  const renderResultCard = (item: Post) => (
+    <Link key={item.id} to={item.route?.path || '#'} className={styles.resultLink}>
+      <div className={styles.resultCard}>
+        <div>
+          <h3>{item.title}</h3>
+
+          {typeof item.properties?.overview === 'string' && <p>{item.properties.overview}</p>}
+        </div>
+
+        <span className={styles.resultBadge}>{getTypeLabel(item.contentType)}</span>
+      </div>
+    </Link>
+  )
+
+  const groupedResults = groupResultsByYear(results).filter(
+    ([year]) => selectedYear === 'all' || year === selectedYear
+  )
 
   return (
     <div className={styles.searchContainer}>
@@ -124,6 +187,7 @@ function ContentPage() {
               className={styles.searchSelect}
               value={sort}
               onChange={e => setSort(e.target.value)}
+              disabled={groupByYear}
             >
               <option value="newest">Newest First</option>
 
@@ -133,6 +197,36 @@ function ContentPage() {
             </select>
           </div>
 
+          <div className={styles.groupControls}>
+            <label className={styles.groupToggle}>
+              <input
+                type="checkbox"
+                checked={groupByYear}
+                onChange={e => {
+                  setGroupByYear(e.target.checked)
+                  setSelectedYear('all')
+                }}
+              />
+              Group by year
+            </label>
+
+            {groupByYear && availableYears.length > 0 && (
+              <select
+                className={styles.searchSelect}
+                value={selectedYear}
+                onChange={e => setSelectedYear(e.target.value)}
+              >
+                <option value="all">All Years</option>
+
+                {availableYears.map(year => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
           <button className={styles.searchBtn} onClick={handleSearch} disabled={loading}>
             {loading ? 'Searching...' : 'Search'}
           </button>
@@ -140,21 +234,18 @@ function ContentPage() {
           <div className={styles.resultsGroup}>
             {searched && results.length === 0 && <p>No results found</p>}
 
-            {results.map(item => (
-              <Link key={item.id} to={item.route?.path || '#'} className={styles.resultLink}>
-                <div className={styles.resultCard}>
-                  <div>
-                    <h3>{item.title}</h3>
+            {searched && results.length > 0 && !groupByYear && results.map(renderResultCard)}
 
-                    {typeof item.properties?.overview === 'string' && (
-                      <p>{item.properties.overview}</p>
-                    )}
-                  </div>
+            {searched &&
+              results.length > 0 &&
+              groupByYear &&
+              groupedResults.map(([year, items]) => (
+                <div key={year} className={styles.yearGroup}>
+                  <h3 className={styles.yearHeading}>{year}</h3>
 
-                  <span className={styles.resultBadge}>{getTypeLabel(item.contentType)}</span>
+                  {items.map(renderResultCard)}
                 </div>
-              </Link>
-            ))}
+              ))}
           </div>
         </div>
       </div>
