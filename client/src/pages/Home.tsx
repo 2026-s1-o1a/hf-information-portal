@@ -6,11 +6,38 @@ import { useNavigate } from 'react-router-dom'
 import type { User } from '../App'
 import { getPosts } from '../services/umbraco'
 import type { Post } from '../services/umbraco'
-import ClinicMap from '../components/ClinicMap'
+import HeroCarousel from '../components/HeroCarousel'
+import type { HeroSlide } from '../components/HeroCarousel'
 
 type Props = {
   user: User | null
 }
+
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 1,
+    title: 'Heart Failure Information Portal',
+    description:
+      'Trusted heart failure information and healthcare resources for patients, clinicians and healthcare organisations.',
+    image: `${import.meta.env.BASE_URL}images/hero-1.jpg`,
+    alt: 'Heart failure information and healthcare resources',
+  },
+  {
+    id: 2,
+    title: 'Find Reliable Heart Failure Information',
+    description: 'Explore articles, clinical information and resources in one central location.',
+    image: `${import.meta.env.BASE_URL}images/hero-2.jpg`,
+    alt: 'Heart health information and resources',
+  },
+  {
+    id: 3,
+    title: 'Connect With Healthcare Services',
+    description:
+      'Discover healthcare services and clinical networks available across South Australia.',
+    image: `${import.meta.env.BASE_URL}images/hero-3.jpg`,
+    alt: 'Healthcare professionals and services',
+  },
+]
 
 function Home({ user }: Props) {
   const navigate = useNavigate()
@@ -67,14 +94,7 @@ function Home({ user }: Props) {
 
   return (
     <div className={styles.homeContainer}>
-      <section className={styles.heroSection}>
-        <h1>Heart Failure Information Portal</h1>
-
-        <p>
-          Trusted heart failure information and healthcare resources for patients, clinicians and
-          healthcare organisations.
-        </p>
-      </section>
+      <HeroCarousel slides={HERO_SLIDES} />
 
       <section className={styles.cardsSection}>
         <h2>Featured Resources</h2>
@@ -131,8 +151,6 @@ function Home({ user }: Props) {
           )}
         </div>
       </section>
-
-      <ClinicMap />
 
       <section className={styles.cardsSection}>
         <h2>Latest Content from Umbraco</h2>

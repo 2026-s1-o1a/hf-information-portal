@@ -573,7 +573,196 @@ const rejectRoleApplication = async (applicationId, adminUserId) => {
 
     throw error
   }
-  
+}
+
+// Return user and roles for admin user management
+const getManagedUserByEmail = async email => {
+  try {
+    const user = await getUserByEmail(email)
+
+    if (!user) {
+      return null
+    }
+
+    const roles = await getUserRoles(user.userId)
+
+    return {
+      id: user.userId,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      roles,
+    }
+  } catch (error) {
+    console.error('Error getting managed user by email:', error)
+
+    throw error
+  }
+}
+
+// Replace user roles from Admin Dashboard
+const replaceUserRoles = async (userId, roleNames, adminUserId) => {
+  if (!Array.isArray(roleNames)) {
+    throw new Error('Roles must be an array')
+  }
+
+  if (!adminUserId) {
+    throw new Error('Admin user ID is required')
+  }
+
+  let transaction
+
+  try {
+    const pool = await connectDB()
+
+    transaction = new sql.Transaction(pool)
+
+    await transaction.begin()
+
+    // Confirm user exists
+    const userRequest = new sql.Request(transaction)
+
+    userRequest.input('UserId', sql.UniqueIdentifier, userId)
+
+    const userResult = await userRequest.query(`
+      SELECT userId
+      FROM Users
+      WHERE userId = @UserId
+    `)
+
+    if (userResult.recordset.length === 0) {
+      throw new Error('User not found')
+    }
+
+    // Patient is always preserved as the base role
+    const requestedRoles = [...new Set(['patient', ...roleNames])]
+
+    const validRoleNames = Object.keys(roleNameToId)
+
+    const invalidRoles = requestedRoles.filter(role => !validRoleNames.includes(role))
+
+    if (invalidRoles.length > 0) {
+      throw new Error(`Invalid role: ${invalidRoles.join(', ')}`)
+    }
+
+    const roleIds = requestedRoles.map(role => roleNameToId[role])
+
+    // Remove current roles
+    const deleteRequest = new sql.Request(transaction)
+
+    deleteRequest.input('UserId', sql.UniqueIdentifier, userId)
+
+    await deleteRequest.query(`
+      DELETE FROM UsersRoles
+      WHERE userId = @UserId
+    `)
+
+    // Add the new role set
+    await addUserRoles(userId, roleIds, transaction)
+
+    // If the user already has a pending application for one of the roles manually assigned by the admin, treat it as an approval
+
+    for (const roleName of requestedRoles) {
+      if (roleName === 'patient') {
+        continue
+      }
+
+      const applicationRequest = new sql.Request(transaction)
+
+      applicationRequest.input('UserId', sql.UniqueIdentifier, userId)
+
+      applicationRequest.input('RoleName', sql.VarChar, roleName)
+
+      applicationRequest.input('ReviewedBy', sql.UniqueIdentifier, adminUserId)
+
+      await applicationRequest.query(`
+        UPDATE RoleApplications
+        SET
+          verificationStatus = 'approved',
+          reviewedBy = @ReviewedBy,
+          reviewedAt = GETDATE()
+        WHERE userId = @UserId
+          AND requestedRole = @RoleName
+          AND verificationStatus = 'pending'
+      `)
+    }
+
+    // Everything succeeded
+    await transaction.commit()
+
+    transaction = null
+
+    const updatedUser = await getUserById(userId)
+
+    return {
+      id: updatedUser.userId,
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      roles: updatedUser.roles,
+    }
+  } catch (error) {
+    if (transaction) {
+      await transaction.rollback()
+    }
+
+    console.error('Error replacing user roles:', error)
+
+    throw error
+  }
+}
+
+// Return all users with a specified role
+const getUsersByRole = async roleName => {
+  try {
+    const pool = await connectDB()
+
+    const request = pool.request()
+
+    request.input('RoleName', sql.VarChar, roleName)
+
+    const result = await request.query(`
+      SELECT DISTINCT
+        u.userId,
+        u.email,
+        u.firstName,
+        u.lastName
+
+      FROM Users u
+
+      JOIN UsersRoles ur
+        ON u.userId = ur.userId
+
+      JOIN Roles r
+        ON ur.roleId = r.roleId
+
+      WHERE r.roleName = @RoleName
+
+      ORDER BY
+        u.firstName,
+        u.lastName
+    `)
+
+    const users = await Promise.all(
+      result.recordset.map(async user => {
+        const roles = await getUserRoles(user.userId)
+
+        return {
+          id: user.userId,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          roles,
+        }
+      })
+    )
+
+    return users
+  } catch (error) {
+    console.error('Error getting users by role:', error)
+
+    throw error
+  }
 }
 
 // Update user's basic info
@@ -696,6 +885,8 @@ export {
   rejectRoleApplication,
   updateUserById,
   getProfileImageById,
-  updateProfileImage
-  
+  updateProfileImage,
+  getManagedUserByEmail,
+  replaceUserRoles,
+  getUsersByRole,
 }

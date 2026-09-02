@@ -1,4 +1,5 @@
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Home from './pages/Home'
@@ -11,6 +12,7 @@ import ClinicianOnly from './pages/ClinicianOnly'
 import RoleApplicationForm from './components/RoleApplicationForm'
 import ContentPage from './pages/ContentPage'
 import ContentDetailPage from './pages/ContentDetailPage'
+import FindClinic from './pages/FindClinic'
 
 import './Theme.css'
 
@@ -41,6 +43,17 @@ export type User = {
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
+  const refreshUser = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/auth/me', {
+        withCredentials: true,
+      })
+
+      setUser(response.data)
+    } catch (error) {
+      console.error('Failed to refresh user:', error)
+    }
+  }
   const [loading, setLoading] = useState(true)
   const location = useLocation()
 
@@ -76,6 +89,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home user={user} />} />
+        <Route path="/find-clinic" element={<FindClinic />} />
         <Route path="/search" element={<ContentPage />} />
         <Route path="/content" element={<ContentPage />} />
         <Route path="/content/*" element={<ContentDetailPage />} />
@@ -85,7 +99,7 @@ function App() {
           path="/admin_panel"
           element={
             <ProtectedRoute user={user} allowedRoles={['admin']}>
-              <AdminPanel />
+              {user ? <AdminPanel user={user} /> : null}
             </ProtectedRoute>
           }
         />
@@ -99,15 +113,16 @@ function App() {
         />
         <Route
           path="/profile"
-          element={
-            user ? <Profile user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />
-          }
+          element={user ? <Profile user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />}
         />
         <Route
           path="/apply-role"
-          element={user ? <RoleApplicationForm /> : <Navigate to="/login" />}
+          element={
+            user ? <RoleApplicationForm refreshUser={refreshUser} /> : <Navigate to="/login" />
+          }
         />
       </Routes>
+      <Footer />
     </div>
   )
 }

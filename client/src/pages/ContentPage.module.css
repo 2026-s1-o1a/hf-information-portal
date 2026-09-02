@@ -205,3 +205,44 @@
     align-items: flex-start;
   }
 }
+
+.groupToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.groupControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  flex-wrap: wrap;
+}
+
+.groupToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.yearGroup {
+  margin-bottom: 1.5rem;
+}
+
+.yearHeading {
+  margin-bottom: 0.75rem;
+
+  padding-bottom: 0.4rem;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  font-size: 1.1rem;
+  opacity: 0.85;
+}

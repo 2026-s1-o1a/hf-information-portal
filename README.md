@@ -136,10 +136,13 @@ JWT_SECRET=your-secret-key
 JWT_EXPIRES_IN=7d
 ```
 
-Create a .env file inside the client/ folder:
+Create a .env file **INSIDE THE /CLIENT** folder:
 ```
 # GOOGLE MAPS API KEY - DO NOT PUBLISH
 VITE_GOOGLE_MAPS_API_KEY=XXXXXXXXXXXXXX
+
+# Set to true to use mock data for contentPage.tsx
+VITE_USE_MOCK_DATA=true
 ```
 ### 5. Run the backend
 

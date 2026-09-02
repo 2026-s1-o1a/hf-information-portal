@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
-
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './RoleApplicationForm.module.css'
-import { useNavigate } from 'react-router-dom'
 
 type Role = 'clinician' | 'doctor' | 'pharmacy' | 'custodian'
 
+type PendingApplication = {
+  requestedRole: Role
+  verificationStatus: string
+}
+
+type Props = {
+  refreshUser: () => Promise<void>
+}
+
 const allRoles: Role[] = ['clinician', 'doctor', 'pharmacy', 'custodian']
 
-function RoleApplicationForm() {
+function RoleApplicationForm({ refreshUser }: Props) {
   const navigate = useNavigate()
 
   const [availableRoles, setAvailableRoles] = useState<Role[]>(allRoles)
@@ -25,6 +33,8 @@ function RoleApplicationForm() {
   const [pharmacyAddress, setPharmacyAddress] = useState('')
   const [licenseNumber, setLicenseNumber] = useState('')
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   useEffect(() => {
     const fetchAvailableRoles = async () => {
       try {
@@ -32,9 +42,19 @@ function RoleApplicationForm() {
           withCredentials: true,
         })
 
-        const userRoles = response.data.roles || []
+        const userRoles: string[] = response.data.roles || []
 
-        const pendingRoles = response.data.pendingRoles || []
+        const pendingApplications: PendingApplication[] = response.data.pendingApplications || []
+
+        /*
+          Only pending applications should make a role
+          unavailable.
+
+          A rejected application can be submitted again.
+        */
+        const pendingRoles = pendingApplications
+          .filter(application => application.verificationStatus === 'pending')
+          .map(application => application.requestedRole)
 
         const unavailableRoles = [...userRoles, ...pendingRoles]
 
@@ -46,7 +66,7 @@ function RoleApplicationForm() {
           setRequestedRole(filteredRoles[0])
         }
       } catch (error) {
-        console.error(error)
+        console.error('Failed to load available roles:', error)
       }
     }
 
@@ -54,11 +74,13 @@ function RoleApplicationForm() {
   }, [])
 
   const handleSubmit = async () => {
+    if (!requestedRole) {
+      alert('No roles available')
+      return
+    }
+
     try {
-      if (!requestedRole) {
-        alert('No roles available')
-        return
-      }
+      setIsSubmitting(true)
 
       let verificationData = {}
 
@@ -107,13 +129,27 @@ function RoleApplicationForm() {
         }
       )
 
+      /*
+        Refresh the global user after the database has
+        successfully created the application.
+
+        This updates pendingApplications immediately.
+      */
+      await refreshUser()
+
       alert('Role application submitted')
 
-      navigate('/')
+      navigate('/profile')
     } catch (error) {
-      console.error(error)
+      console.error('Failed to submit role application:', error)
 
-      alert('Failed to submit application')
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data?.message || 'Failed to submit application')
+      } else {
+        alert('Failed to submit application')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -126,9 +162,14 @@ function RoleApplicationForm() {
       ) : (
         <>
           <div className={styles.formGroup}>
-            <label>Requested Role</label>
+            <label htmlFor="requestedRole">Requested Role</label>
 
-            <select value={requestedRole} onChange={e => setRequestedRole(e.target.value as Role)}>
+            <select
+              id="requestedRole"
+              value={requestedRole}
+              onChange={e => setRequestedRole(e.target.value as Role)}
+              disabled={isSubmitting}
+            >
               {availableRoles.map(role => (
                 <option key={role} value={role}>
                   {role === 'custodian'
@@ -144,42 +185,52 @@ function RoleApplicationForm() {
             requestedRole === 'custodian') && (
             <>
               <div className={styles.formGroup}>
-                <label>{requestedRole === 'custodian' ? 'Employee ID' : 'AHPRA Number'}</label>
+                <label htmlFor="ahpraNumber">
+                  {requestedRole === 'custodian' ? 'Employee ID' : 'AHPRA Number'}
+                </label>
 
                 <input
+                  id="ahpraNumber"
                   type="text"
                   value={ahpraNumber}
                   onChange={e => setAhpraNumber(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Organisation</label>
+                <label htmlFor="organisation">Organisation</label>
 
                 <input
+                  id="organisation"
                   type="text"
                   value={organisation}
                   onChange={e => setOrganisation(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Work Email</label>
+                <label htmlFor="workEmail">Work Email</label>
 
                 <input
+                  id="workEmail"
                   type="email"
                   value={workEmail}
                   onChange={e => setWorkEmail(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Phone Number</label>
+                <label htmlFor="phoneNumber">Phone Number</label>
 
                 <input
+                  id="phoneNumber"
                   type="text"
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
             </>
@@ -188,49 +239,62 @@ function RoleApplicationForm() {
           {requestedRole === 'pharmacy' && (
             <>
               <div className={styles.formGroup}>
-                <label>Pharmacy Name</label>
+                <label htmlFor="pharmacyName">Pharmacy Name</label>
 
                 <input
+                  id="pharmacyName"
                   type="text"
                   value={pharmacyName}
                   onChange={e => setPharmacyName(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Pharmacy Address</label>
+                <label htmlFor="pharmacyAddress">Pharmacy Address</label>
 
                 <input
+                  id="pharmacyAddress"
                   type="text"
                   value={pharmacyAddress}
                   onChange={e => setPharmacyAddress(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>License Number</label>
+                <label htmlFor="licenseNumber">License Number</label>
 
                 <input
+                  id="licenseNumber"
                   type="text"
                   value={licenseNumber}
                   onChange={e => setLicenseNumber(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Phone Number</label>
+                <label htmlFor="pharmacyPhoneNumber">Phone Number</label>
 
                 <input
+                  id="pharmacyPhoneNumber"
                   type="text"
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
             </>
           )}
 
-          <button className={styles.submitBtn} onClick={handleSubmit}>
-            Submit Application
+          <button
+            type="button"
+            className={styles.submitBtn}
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Application'}
           </button>
         </>
       )}
