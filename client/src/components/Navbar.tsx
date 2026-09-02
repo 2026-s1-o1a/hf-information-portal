@@ -48,11 +48,14 @@ function Navbar({ user, setUser }: Props) {
       <div className={styles.navbarCenter}>
         <Link to="/search">Resources</Link>
 
+        <Link to="/find-clinic">Find a Clinic</Link>
+
         {user && <Link to="/surveys">Surveys</Link>}
 
         {user?.roles?.includes('admin') && <Link to="/admin_panel">Admin Dashboard</Link>}
 
         {user?.roles?.includes('doctor') && <Link to="/ClinicianOnly">Clinician Dashboard</Link>}
+
         <a href="https://ceih.sa.gov.au/contact-us" target="_blank" rel="noopener noreferrer">
           Contact CEIH
         </a>
@@ -71,11 +74,9 @@ function Navbar({ user, setUser }: Props) {
             </button>
           </>
         ) : (
-          <>
-            <Link to="/register">
-              <button className={styles.joinUs}>Join Us</button>
-            </Link>
-          </>
+          <Link to="/register">
+            <button className={styles.joinUs}>Join Us</button>
+          </Link>
         )}
       </div>
     </nav>
