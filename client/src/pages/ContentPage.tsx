@@ -1,143 +1,163 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
-import { getPosts } from '../services/umbraco'
+import { getPosts } from "../services/umbraco";
 
-import type { Post } from '../services/umbraco'
+import type { Post } from "../services/umbraco";
 
-import styles from './ContentPage.module.css'
+import styles from "./ContentPage.module.css";
 
 function ContentPage() {
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState("");
 
-  const [type, setType] = useState('all')
+  const [type, setType] = useState("all");
 
-  const [sort, setSort] = useState('newest')
+  const [sort, setSort] = useState("newest");
 
-  const [groupByYear, setGroupByYear] = useState(false)
+  const [groupByYear, setGroupByYear] = useState(false);
 
-  const [selectedYear, setSelectedYear] = useState('all')
+  const [selectedYear, setSelectedYear] = useState("all");
 
-  const [results, setResults] = useState<Post[]>([])
+  const [results, setResults] = useState<Post[]>([]);
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const [searched, setSearched] = useState(false)
+  const [searched, setSearched] = useState(false);
 
   const handleSearch = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const data = await getPosts()
+      const data = await getPosts();
 
-      let filtered = data.filter(item => {
-        const matchesText = item.title.toLowerCase().includes(searchText.toLowerCase())
+      let filtered = data.filter((item) => {
+        const matchesText = item.title
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
 
-        const matchesType = type === 'all' || item.contentType === type
+        const matchesType = type === "all" || item.contentType === type;
 
-        return matchesText && matchesType
-      })
+        return matchesText && matchesType;
+      });
 
-      if (sort === 'newest') {
+      if (sort === "newest") {
         filtered = filtered.sort(
-          (a, b) => new Date(b.createDate || '').getTime() - new Date(a.createDate || '').getTime()
-        )
-      } else if (sort === 'oldest') {
+          (a, b) =>
+            new Date(b.createDate || "").getTime() -
+            new Date(a.createDate || "").getTime(),
+        );
+      } else if (sort === "oldest") {
         filtered = filtered.sort(
-          (a, b) => new Date(a.createDate || '').getTime() - new Date(b.createDate || '').getTime()
-        )
-      } else if (sort === 'az') {
-        filtered = filtered.sort((a, b) => a.title.localeCompare(b.title))
+          (a, b) =>
+            new Date(a.createDate || "").getTime() -
+            new Date(b.createDate || "").getTime(),
+        );
+      } else if (sort === "az") {
+        filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
       }
 
-      setResults(filtered)
+      setResults(filtered);
 
-      setSelectedYear('all')
+      setSelectedYear("all");
 
-      setSearched(true)
+      setSearched(true);
     } catch (error) {
-      console.error('Search failed:', error)
+      console.error("Search failed:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getTypeLabel = (contentType: string) => {
     switch (contentType) {
-      case 'videoPage':
-        return 'Video'
+      case "videoPage":
+        return "Video";
 
-      case 'conditionPage':
-        return 'Condition'
+      case "conditionPage":
+        return "Condition";
 
-      case 'contentPage':
-        return 'Article'
+      case "contentPage":
+        return "Article";
 
-      case 'newsPage':
-        return 'News'
+      case "newsPage":
+        return "News";
 
       default:
-        return contentType
+        return contentType;
     }
-  }
+  };
 
   const getYearLabel = (createDate?: string) => {
-    if (!createDate) return 'Unknown'
+    if (!createDate) return "Unknown";
 
-    const year = new Date(createDate).getFullYear()
+    const year = new Date(createDate).getFullYear();
 
-    return isNaN(year) ? 'Unknown' : String(year)
-  }
+    return isNaN(year) ? "Unknown" : String(year);
+  };
 
   const sortYearsDescending = (years: string[]) => {
     return years.sort((a, b) => {
-      if (a === 'Unknown') return 1
-      if (b === 'Unknown') return -1
+      if (a === "Unknown") return 1;
+      if (b === "Unknown") return -1;
 
-      return Number(b) - Number(a)
-    })
-  }
+      return Number(b) - Number(a);
+    });
+  };
 
   const groupResultsByYear = (items: Post[]) => {
-    const groups = new Map<string, Post[]>()
+    const groups = new Map<string, Post[]>();
 
     for (const item of items) {
-      const year = getYearLabel(item.createDate)
+      const year = getYearLabel(item.createDate);
 
       if (!groups.has(year)) {
-        groups.set(year, [])
+        groups.set(year, []);
       }
 
-      groups.get(year)!.push(item)
+      groups.get(year)!.push(item);
     }
 
-    const sortedYears = sortYearsDescending(Array.from(groups.keys()))
+    const sortedYears = sortYearsDescending(Array.from(groups.keys()));
 
-    return sortedYears.map(year => [year, groups.get(year)!] as [string, Post[]])
-  }
+    return sortedYears.map(
+      (year) => [year, groups.get(year)!] as [string, Post[]],
+    );
+  };
 
-  const availableYears = groupByYear ? sortYearsDescending(
-    Array.from(new Set(results.map(item => getYearLabel(item.createDate))))
-  ) : []
+  const availableYears = groupByYear
+    ? sortYearsDescending(
+        Array.from(
+          new Set(results.map((item) => getYearLabel(item.createDate))),
+        ),
+      )
+    : [];
 
   const renderResultCard = (item: Post) => (
-    <Link key={item.id} to={item.route?.path || '#'} className={styles.resultLink}>
+    <Link
+      key={item.id}
+      to={item.route?.path || "#"}
+      className={styles.resultLink}
+    >
       <div className={styles.resultCard}>
         <div>
           <h3>{item.title}</h3>
 
-          {typeof item.properties?.overview === 'string' && <p>{item.properties.overview}</p>}
+          {typeof item.properties?.overview === "string" && (
+            <p>{item.properties.overview}</p>
+          )}
         </div>
 
-        <span className={styles.resultBadge}>{getTypeLabel(item.contentType)}</span>
+        <span className={styles.resultBadge}>
+          {getTypeLabel(item.contentType)}
+        </span>
       </div>
     </Link>
-  )
+  );
 
   const groupedResults = groupResultsByYear(results).filter(
-    ([year]) => selectedYear === 'all' || year === selectedYear
-  )
+    ([year]) => selectedYear === "all" || year === selectedYear,
+  );
 
   return (
     <div className={styles.searchContainer}>
@@ -151,10 +171,10 @@ function ContentPage() {
               placeholder="Search content..."
               className={styles.searchInput}
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  handleSearch()
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
                 }
               }}
             />
@@ -163,14 +183,14 @@ function ContentPage() {
           <div
             className={styles.searchGroup}
             style={{
-              flexDirection: 'row',
-              gap: '0.5rem',
+              flexDirection: "row",
+              gap: "0.5rem",
             }}
           >
             <select
               className={styles.searchSelect}
               value={type}
-              onChange={e => setType(e.target.value)}
+              onChange={(e) => setType(e.target.value)}
             >
               <option value="all">All Types</option>
 
@@ -186,7 +206,7 @@ function ContentPage() {
             <select
               className={styles.searchSelect}
               value={sort}
-              onChange={e => setSort(e.target.value)}
+              onChange={(e) => setSort(e.target.value)}
               disabled={groupByYear}
             >
               <option value="newest">Newest First</option>
@@ -202,9 +222,9 @@ function ContentPage() {
               <input
                 type="checkbox"
                 checked={groupByYear}
-                onChange={e => {
-                  setGroupByYear(e.target.checked)
-                  setSelectedYear('all')
+                onChange={(e) => {
+                  setGroupByYear(e.target.checked);
+                  setSelectedYear("all");
                 }}
               />
               Group by year
@@ -214,11 +234,11 @@ function ContentPage() {
               <select
                 className={styles.searchSelect}
                 value={selectedYear}
-                onChange={e => setSelectedYear(e.target.value)}
+                onChange={(e) => setSelectedYear(e.target.value)}
               >
                 <option value="all">All Years</option>
 
-                {availableYears.map(year => (
+                {availableYears.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
@@ -227,14 +247,30 @@ function ContentPage() {
             )}
           </div>
 
-          <button className={styles.searchBtn} onClick={handleSearch} disabled={loading}>
-            {loading ? 'Searching...' : 'Search'}
+          <button
+            className={styles.searchBtn}
+            onClick={handleSearch}
+            disabled={loading}
+          >
+            {loading ? "Searching..." : "Search"}
           </button>
 
           <div className={styles.resultsGroup}>
             {searched && results.length === 0 && <p>No results found</p>}
 
-            {searched && results.length > 0 && !groupByYear && results.map(renderResultCard)}
+            {results.map((item) => (
+              <Link
+                key={item.id}
+                to={`/content${item.route?.path || ""}`}
+                className={styles.resultLink}
+              >
+                <div className={styles.resultCard}>
+                  <div>
+                    <h3>{item.title}</h3>
+                  </div>
+                </div>
+              </Link>
+            ))}
 
             {searched &&
               results.length > 0 &&
@@ -250,7 +286,7 @@ function ContentPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ContentPage
+export default ContentPage;
