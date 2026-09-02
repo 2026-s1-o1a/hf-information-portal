@@ -1,0 +1,131 @@
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: -50px;
+
+  width: calc(100% + 50px);
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(58, 60, 112, 0.32);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 750px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.heroContent h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.heroContent p {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 1.25rem);
+  line-height: 1.6;
+}
+
+.heroArrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+
+  width: 48px;
+  height: 48px;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: white;
+
+  font-size: 2rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.heroArrow:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.heroArrowLeft {
+  left: 1.5rem;
+}
+
+.heroArrowRight {
+  right: 1.5rem;
+}
+
+.heroDots {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+}
+
+.heroDot {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.heroDotActive {
+  background: white;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 350px;
+  }
+
+  .heroArrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6rem;
+  }
+
+  .heroArrowLeft {
+    left: 0.75rem;
+  }
+
+  .heroArrowRight {
+    right: 0.75rem;
+  }
+
+  .heroContent {
+    padding: 2rem 4rem;
+  }
+}
