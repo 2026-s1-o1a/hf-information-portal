@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Infrastructure.Scoping;
 
-// Returns a list of survey key-ids
+// Returns a list of survey details
 [ApiController]
 [Route("api/forms")]
 public class FormsController : ControllerBase
@@ -12,24 +12,34 @@ public class FormsController : ControllerBase
     {
         _scopeProvider = scopeProvider;
     }
-    
+
     [HttpGet]
-    public IActionResult GetFormIds()
+    public IActionResult GetForms()
     {
         using var scope = _scopeProvider.CreateScope();
-        
+
         var forms = scope.Database.Fetch<dynamic>(
-            "SELECT [Key] FROM UFForms"
+            "SELECT * FROM UFForms"
             );
-            
-        var keys = forms
-        .Select(form => form.Key?.ToString())
-        .Where(key => !string.IsNullOrWhiteSpace(key))
+        
+        var result = forms
+        .Select(form => new
+        {
+            Id = form.Key?.ToString(),
+            Name = form.Name?.ToString(),
+            CreatedBy = form.CreatedBy,
+            Created = form.Created,
+            Updated = form.Updated
+        })
         .ToList();
 
     scope.Complete();
 
-    return Ok(keys);
+    return Ok(result);
 }
+
+
+
+
 }
 
