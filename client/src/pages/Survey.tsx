@@ -30,14 +30,16 @@ export default function SurveyList() {
 
   return (
     <div>
-      <h1>Available Surveys</h1>
+      <br/>
+      <h1 className="text-center">Available Surveys</h1>
+      <br/>
 
 
 
   <table className="table table-striped table-bordered">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Survey Name</th>
       <th>Created By</th>
       <th>Created</th>
       <th>Updated</th>
@@ -49,7 +51,7 @@ export default function SurveyList() {
     {surveys.map(survey => (
       <tr key={survey.id}>
         <td>{survey.name}</td>
-        <td>{survey.createdBy}</td>
+        <td>John Doe</td>
         <td>
           {new Date(survey.created).toLocaleDateString()}
         </td>
@@ -58,7 +60,7 @@ export default function SurveyList() {
         </td>
         <td>
           <button
-            className="btn btn-primary"
+            className="btn btn-secondary"
             onClick={() => openSurvey(survey.id)}
           >
             Take Survey
