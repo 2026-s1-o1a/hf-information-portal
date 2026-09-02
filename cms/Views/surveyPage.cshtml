@@ -1,10 +1,14 @@
-﻿
-@using Umbraco.Cms.Web.Common
+﻿@using Umbraco.Cms.Web.Common
 
 @inherits UmbracoViewPage
 
 @{
     Layout = null;
+
+    var formIdValue = Context.Request.Query["formId"].FirstOrDefault();
+
+    Guid formId;
+    var validFormId = Guid.TryParse(formIdValue, out formId);
 }
 
 <!DOCTYPE html>
@@ -12,24 +16,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Caffeine & Heart Health Survey</title>
+    <title>Survey</title>
 </head>
 
 <body>
-
-    <h1>Caffeine & Heart Health Survey</h1>
-
-    @await Component.InvokeAsync(
-        "RenderForm",
-        new
-        {
-            formId = Guid.Parse("0d724c45-b329-472d-9b58-d44f1bd48d1c"),
-            theme = "default",
-            includeScripts = true
-        }
-    )
+    @if (!validFormId)
+    {
+        <p>Invalid or missing form ID.</p>
+    }
+    else
+    {
+        @await Component.InvokeAsync(
+            "RenderForm",
+            new
+            {
+                formId = formId,
+                theme = "default",
+                includeScripts = true
+            }
+        )
+    }
 
 </body>
 </html>
-
 
