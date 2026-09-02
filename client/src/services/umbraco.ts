@@ -178,3 +178,17 @@ export async function getContentBySlug(slug: string) {
 
   return data
 }
+
+export async function getCaffeineSurvey() {
+  const formId = '0d724c45-b329-472d-9b58-d44f1bd48d1c'
+
+  const res = await fetch(
+    `/umbraco/forms/delivery/api/v1/definitions/${formId}`
+  )
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch survey: ${res.status}`)
+  }
+
+  return res.json()
+}
