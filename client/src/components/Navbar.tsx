@@ -48,6 +48,8 @@ function Navbar({ user, setUser }: Props) {
       <div className={styles.navbarCenter}>
         <Link to="/search">Resources</Link>
 
+        <Link to="/survey">Surveys</Link>
+
         <Link to="/find-clinic">Find a Clinic</Link>
 
         {user && <Link to="/surveys">Surveys</Link>}
