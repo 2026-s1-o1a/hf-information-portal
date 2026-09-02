@@ -1,67 +1,318 @@
 .container {
-  padding: 2rem;
   min-height: 100vh;
 
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 4rem;
+
   background-color: var(--surface);
+  color: var(--text-main);
+}
+
+.pageHeader {
+  text-align: center;
+}
+
+.pageHeader h1 {
+  margin: 0;
+
+  font-size: 2rem;
+}
+
+.pageHeader p {
+  margin: 0.7rem 0 0;
+
+  color: var(--text-secondary);
+}
+
+/* Tabs */
+
+.tabs {
+  display: flex;
+  justify-content: center;
+
+  gap: 0.5rem;
+
+  margin-top: 2.5rem;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.6rem;
+
+  padding: 1rem 1.4rem;
+
+  border: none;
+  border-bottom: 3px solid transparent;
+
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tab:hover {
+  background-color: color-mix(in srgb, var(--primary) 25%, white);
 
   color: var(--text-main);
 }
 
+.activeTab {
+  color: var(--text-main);
+
+  border-bottom-color: var(--primary-dark);
+}
+
+.tabBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 24px;
+  height: 24px;
+
+  padding: 0 0.4rem;
+
+  border-radius: 999px;
+
+  background-color: var(--primary-dark);
+  color: white;
+
+  font-size: 0.8rem;
+}
+
+.tabContent {
+  margin-top: 2.5rem;
+}
+
+/* Common sections */
+
+.sectionHeader {
+  margin-bottom: 1.7rem;
+}
+
+.sectionHeader h2 {
+  margin: 0 0 0.5rem;
+}
+
+.sectionHeader p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  line-height: 1.5;
+}
+
+.managementPanel {
+  max-width: 1000px;
+
+  margin: 0 auto;
+
+  padding: 2rem;
+
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  background-color: color-mix(in srgb, var(--primary) 12%, white);
+
+  box-shadow: 0 4px 14px rgba(50, 50, 80, 0.07);
+}
+
+.emptyPanel {
+  padding: 2rem;
+
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+
+  background-color: var(--surface);
+
+  text-align: center;
+
+  color: var(--text-secondary);
+}
+
+/* Verification Requests */
+
 .requestsContainer {
   display: grid;
-  grid-template-columns: 350px 1fr;
+
+  grid-template-columns:
+    340px
+    minmax(0, 1fr);
+
   gap: 2rem;
 
-  margin-top: 2rem;
+  max-width: 1200px;
+
+  margin: 0 auto;
 }
 
 .requestsList {
   display: flex;
   flex-direction: column;
+
   gap: 1rem;
 }
 
 .requestCard {
+  width: 100%;
+
   padding: 1.2rem;
 
+  border: 1px solid var(--border);
   border-radius: 12px;
 
   background-color: var(--surface);
-  border-width: 20px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  color: var(--text-main);
+
+  box-shadow: 0 3px 10px rgba(50, 50, 80, 0.07);
+
+  text-align: left;
+
   cursor: pointer;
 
   transition:
     transform 0.15s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .requestCard:hover {
   transform: translateY(-2px);
 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 14px rgba(50, 50, 80, 0.11);
+}
+
+.requestCard h3 {
+  margin: 0 0 0.6rem;
+}
+
+.requestCard p {
+  margin: 0;
+}
+
+.selectedRequestCard {
+  border-color: var(--primary-dark);
+
+  background-color: color-mix(in srgb, var(--primary) 25%, white);
 }
 
 .detailsPanel {
-  padding: 1.5rem;
+  min-height: 420px;
 
-  border-radius: 12px;
+  padding: 2rem;
 
-  background-color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
 
-  min-height: 400px;
+  background-color: color-mix(in srgb, var(--primary) 22%, white);
+
+  box-shadow: 0 4px 14px rgba(50, 50, 80, 0.08);
 }
 
-.detailsPanel h2 {
-  margin-bottom: 1rem;
+.detailsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 1rem;
 }
 
-.detailsPanel p {
-  margin-bottom: 0.8rem;
+.detailsHeader h2 {
+  margin: 0 0 0.4rem;
 }
+
+.detailsHeader p {
+  margin: 0;
+
+  color: var(--text-secondary);
+}
+
+.roleBadge {
+  padding: 0.45rem 0.8rem;
+
+  border-radius: 999px;
+
+  background-color: var(--primary-dark);
+  color: white;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.divider {
+  height: 1px;
+
+  margin: 1.5rem 0;
+
+  background-color: var(--border);
+}
+
+.verificationDetails {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: 1rem;
+}
+
+.detailRow {
+  display: grid;
+
+  grid-template-columns: 180px 1fr;
+
+  gap: 1rem;
+
+  padding: 0.8rem 0;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.detailRow span {
+  color: var(--text-secondary);
+}
+
+.emptyDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 350px;
+
+  text-align: center;
+}
+
+.emptyDetails h3 {
+  margin-bottom: 0.5rem;
+}
+
+.emptyDetails p {
+  margin: 0;
+
+  color: var(--text-secondary);
+}
+
+/* Approve / Reject */
 
 .buttonGroup {
   display: flex;
+
   gap: 1rem;
 
   margin-top: 2rem;
@@ -74,17 +325,462 @@
   border: none;
   border-radius: 8px;
 
-  cursor: pointer;
+  color: white;
 
   font-weight: 600;
+
+  cursor: pointer;
 }
 
 .approveBtn {
   background-color: #2e8b57;
-  color: white;
 }
 
 .rejectBtn {
   background-color: #c0392b;
+}
+
+.approveBtn:hover,
+.rejectBtn:hover {
+  opacity: 0.9;
+}
+
+/* User Search */
+
+.userSearch {
+  display: flex;
+
+  gap: 0.75rem;
+
+  width: 100%;
+}
+
+.searchInput {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 0.95rem 1rem;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background-color: var(--surface);
+  color: var(--text-main);
+
+  font-size: 1rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+
+  border-color: var(--primary-dark);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-dark) 20%, transparent);
+}
+
+.searchBtn {
+  min-width: 115px;
+
+  padding: 0.95rem 1.4rem;
+
+  border: none;
+  border-radius: 10px;
+
+  background-color: var(--primary-dark);
   color: white;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.searchBtn:hover {
+  opacity: 0.9;
+}
+
+.searchBtn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  margin-top: 1rem;
+
+  color: #c0392b;
+}
+
+/* User Management */
+
+.userManagementCard {
+  margin-top: 2rem;
+
+  padding: 1.7rem;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background-color: var(--surface);
+
+  box-shadow: 0 3px 10px rgba(50, 50, 80, 0.07);
+}
+
+.userDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 1rem;
+
+  padding-bottom: 1.4rem;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.userDetails h3 {
+  margin: 0 0 0.4rem;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+}
+
+.userDetails p {
+  margin: 0;
+
+  color: var(--text-secondary);
+}
+
+.userId {
+  color: var(--text-secondary);
+
+  font-size: 0.85rem;
+}
+
+.roleManagement {
+  margin-top: 1.5rem;
+}
+
+.roleManagement h3 {
+  margin-bottom: 0.4rem;
+}
+
+.roleManagement > p {
+  margin-top: 0;
+
+  color: var(--text-secondary);
+}
+
+.rolesGrid {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 0.8rem;
+
+  margin-top: 1.2rem;
+}
+
+.roleOption {
+  display: flex;
+  align-items: center;
+
+  gap: 0.55rem;
+
+  padding: 0.75rem 1rem;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background-color: var(--surface);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.roleOption:hover {
+  border-color: var(--primary-dark);
+}
+
+.selectedRole {
+  border-color: var(--primary-dark);
+
+  background-color: color-mix(in srgb, var(--primary) 32%, white);
+}
+
+.roleOption:has(input:disabled) {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+.roleOption input {
+  width: 18px;
+  height: 18px;
+
+  cursor: pointer;
+}
+
+.roleOption input:disabled {
+  cursor: not-allowed;
+}
+
+.adminRoleNote {
+  margin-top: 1rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.9rem;
+}
+
+.saveRolesContainer {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 2rem;
+}
+
+.saveRolesBtn {
+  padding: 0.85rem 1.5rem;
+
+  border: none;
+  border-radius: 9px;
+
+  background-color: var(--primary-dark);
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.saveRolesBtn:hover {
+  opacity: 0.9;
+}
+
+.saveRolesBtn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.adminNotice {
+  margin-top: 1.5rem;
+
+  padding: 1.25rem;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background-color: color-mix(in srgb, var(--primary) 20%, white);
+}
+
+.adminNotice h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.adminNotice p {
+  margin: 0;
+
+  color: var(--text-secondary);
+}
+
+/* Current Admins */
+
+.adminGrid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 1rem;
+}
+
+.adminCard {
+  display: flex;
+  align-items: center;
+
+  gap: 1rem;
+
+  padding: 1.2rem;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background-color: var(--surface);
+
+  box-shadow: 0 3px 10px rgba(50, 50, 80, 0.06);
+}
+
+.adminAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+  overflow: hidden;
+
+  background-color: var(--primary);
+  color: var(--text-main);
+
+  font-weight: 700;
+}
+
+.adminAvatarImage {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.adminInfo {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.adminInfo h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
+
+  margin: 0 0 0.3rem;
+}
+
+.adminInfo p {
+  margin: 0;
+
+  overflow: hidden;
+
+  color: var(--text-secondary);
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youBadge {
+  padding: 0.25rem 0.55rem;
+
+  border-radius: 999px;
+
+  background-color: var(--primary);
+  color: var(--text-main);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.viewOnlyBadge {
+  flex-shrink: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.manageBtn {
+  padding: 0.7rem 1rem;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: var(--primary-dark);
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.manageBtn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .tabs {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+  }
+
+  .tab {
+    flex-shrink: 0;
+  }
+
+  .managementPanel {
+    padding: 1.4rem;
+  }
+
+  .requestsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .userSearch {
+    flex-direction: column;
+  }
+
+  .searchBtn {
+    width: 100%;
+  }
+
+  .rolesGrid {
+    flex-direction: column;
+  }
+
+  .roleOption {
+    width: 100%;
+  }
+
+  .detailRow {
+    grid-template-columns: 1fr;
+
+    gap: 0.3rem;
+  }
+
+  .detailsHeader {
+    flex-direction: column;
+  }
+
+  .userDetails {
+    flex-direction: column;
+  }
+
+  .adminCard {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .manageBtn {
+    width: 100%;
+  }
+
+  .viewOnlyBadge {
+    width: 100%;
+
+    text-align: right;
+  }
 }
