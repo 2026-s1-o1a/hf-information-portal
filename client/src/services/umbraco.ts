@@ -179,16 +179,17 @@ export async function getContentBySlug(slug: string) {
   return data
 }
 
-export async function getCaffeineSurvey() {
-  const formId = '0d724c45-b329-472d-9b58-d44f1bd48d1c'
-
-  const res = await fetch(
-    `/umbraco/forms/delivery/api/v1/definitions/${formId}`
-  )
+export async function getFormIds(): Promise<string[]> {
+  const res = await fetch('https://localhost:44343/api/forms')
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch survey: ${res.status}`)
+    throw new Error(`Failed to fetch form IDs: ${res.status}`)
   }
 
   return res.json()
 }
+
+
+
+
+
