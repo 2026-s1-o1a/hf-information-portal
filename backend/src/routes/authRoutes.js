@@ -12,27 +12,56 @@ import {
   updateUser,
   uploadProfileImage,
   getProfileImage,
+  searchUser,
+  updateManagedUserRoles,
+  getAdmins,
 } from '../controllers/authController.js'
+
 import { authenticateToken } from '../middlewares/authenticateToken.js'
+
+import { requireAdmin } from '../middlewares/requireAdmin.js'
+
 import upload from '../middlewares/upload.js'
 
 const router = express.Router()
 
+// Authentication
 router.post('/signup', signup)
+
 router.post('/signin', signin)
+
 router.post('/signout', signout)
+
+// Current user
 router.get('/me', authenticateToken, getUser)
+
 router.patch('/me', authenticateToken, updateUser)
+
 router.patch(
   '/me/profile-image',
   authenticateToken,
   upload.single('profileImage'),
-  uploadProfileImage,
+  uploadProfileImage
 )
+
 router.get('/profile-image/:userId', getProfileImage)
-router.get('/verification-requests', authenticateToken, getVerificationRequests)
+
+// Role applications
 router.post('/apply', authenticateToken, applyForRole)
-router.post('/approve-request', authenticateToken, approveRequest)
-router.post('/reject-request', authenticateToken, rejectRequest)
+
+// Admin: verification requests
+router.get('/verification-requests', authenticateToken, requireAdmin, getVerificationRequests)
+
+router.post('/approve-request', authenticateToken, requireAdmin, approveRequest)
+
+router.post('/reject-request', authenticateToken, requireAdmin, rejectRequest)
+
+// Admin: user management
+router.get('/users/search', authenticateToken, requireAdmin, searchUser)
+
+router.patch('/users/:userId/roles', authenticateToken, requireAdmin, updateManagedUserRoles)
+
+// Admin: current admins
+router.get('/admins', authenticateToken, requireAdmin, getAdmins)
 
 export default router

@@ -14,6 +14,9 @@ import {
   updateUserById,
   updateProfileImage,
   getProfileImageById,
+  getManagedUserByEmail,
+  replaceUserRoles,
+  getUsersByRole,
 } from '../models/userModel.js'
 
 import { generateToken } from '../utils/generateToken.js'
@@ -118,6 +121,7 @@ const signin = async (req, res) => {
 
     // Get approved roles
     const roles = await getUserRoles(user.userId)
+    const pendingApplications = await getPendingVerificationRequestsByUserId(user.userId)
 
     // Generate JWT
     generateToken(user.userId, res)
@@ -129,13 +133,11 @@ const signin = async (req, res) => {
       data: {
         user: {
           id: user.userId,
-
           email: user.email,
-
           firstName: user.firstName,
           lastName: user.lastName,
-
           roles,
+          pendingApplications,
         },
       },
     })
@@ -374,6 +376,116 @@ const rejectRequest = async (req, res) => {
   }
 }
 
+// Admin: search registered user by email
+const searchUser = async (req, res) => {
+  try {
+    const { email } = req.query
+
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({
+        message: 'Email is required',
+      })
+    }
+
+    const user = await getManagedUserByEmail(email.trim())
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      })
+    }
+
+    return res.status(200).json(user)
+  } catch (error) {
+    console.error('User search error:', error)
+
+    return res.status(500).json({
+      message: 'Failed to search for user',
+    })
+  }
+}
+
+// Admin: replace a user's roles
+const updateManagedUserRoles = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const { roles } = req.body
+
+    if (!Array.isArray(roles)) {
+      return res.status(400).json({
+        message: 'Roles must be an array',
+      })
+    }
+
+    const allowedRoles = ['admin', 'doctor', 'clinician', 'pharmacy', 'custodian']
+
+    const invalidRoles = roles.filter(role => !allowedRoles.includes(role))
+
+    if (invalidRoles.length > 0) {
+      return res.status(400).json({
+        message: `Invalid role: ${invalidRoles.join(', ')}`,
+      })
+    }
+
+    const isCurrentUser =
+      req.user.userId.toString().toLowerCase() === userId.toString().toLowerCase()
+
+    // Get the current roles of the account being edited
+    const targetRoles = await getUserRoles(userId)
+
+    /*
+      Administrators cannot modify another
+      administrator's roles.
+    */
+    if (targetRoles.includes('admin') && !isCurrentUser) {
+      return res.status(403).json({
+        message: 'You cannot modify another administrator.',
+      })
+    }
+
+    /*
+      Administrators may modify their own secondary
+      roles but cannot remove their own Admin role.
+    */
+    if (isCurrentUser && targetRoles.includes('admin') && !roles.includes('admin')) {
+      return res.status(400).json({
+        message: 'You cannot remove your own admin role.',
+      })
+    }
+
+    const updatedUser = await replaceUserRoles(userId, roles, req.user.userId)
+
+    return res.status(200).json(updatedUser)
+  } catch (error) {
+    console.error('Role update error:', error)
+
+    if (error.message === 'User not found') {
+      return res.status(404).json({
+        message: 'User not found',
+      })
+    }
+
+    return res.status(400).json({
+      message: error.message,
+    })
+  }
+}
+
+// Admin: return current admins
+const getAdmins = async (req, res) => {
+  try {
+    const admins = await getUsersByRole('admin')
+
+    return res.status(200).json(admins)
+  } catch (error) {
+    console.error('Get admins error:', error)
+
+    return res.status(500).json({
+      message: 'Failed to load admins',
+    })
+  }
+}
+
 export {
   signup,
   signin,
@@ -386,4 +498,7 @@ export {
   getVerificationRequests,
   approveRequest,
   rejectRequest,
+  searchUser,
+  updateManagedUserRoles,
+  getAdmins,
 }
