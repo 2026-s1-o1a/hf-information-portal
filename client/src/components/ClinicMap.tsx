@@ -6,7 +6,6 @@ function ClinicMap() {
 
   return (
     <section className={styles.mapSection}>
-      <h2>Find a Clinic Near You</h2>
       <div className={styles.mapWrapper}>
         <iframe
           className={styles.mapFrame}

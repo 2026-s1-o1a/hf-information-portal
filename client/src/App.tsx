@@ -11,6 +11,7 @@ import ClinicianOnly from './pages/ClinicianOnly'
 import RoleApplicationForm from './components/RoleApplicationForm'
 import ContentPage from './pages/ContentPage'
 import ContentDetailPage from './pages/ContentDetailPage'
+import FindClinic from './pages/FindClinic'
 
 import './Theme.css'
 
@@ -76,6 +77,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home user={user} />} />
+        <Route path="/find-clinic" element={<FindClinic />} />
         <Route path="/search" element={<ContentPage />} />
         <Route path="/content" element={<ContentPage />} />
         <Route path="/content/*" element={<ContentDetailPage />} />
@@ -99,9 +101,7 @@ function App() {
         />
         <Route
           path="/profile"
-          element={
-            user ? <Profile user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />
-          }
+          element={user ? <Profile user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />}
         />
         <Route
           path="/apply-role"
