@@ -141,7 +141,7 @@ function ContentPage() {
             {searched && results.length === 0 && <p>No results found</p>}
 
             {results.map(item => (
-              <Link key={item.id} to={item.route?.path || '#'} className={styles.resultLink}>
+              <Link key={item.id} to={`/content${item.route?.path || ''}`} className={styles.resultLink}>
                 <div className={styles.resultCard}>
                   <div>
                     <h3>{item.title}</h3>
