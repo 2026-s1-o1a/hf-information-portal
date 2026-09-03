@@ -1,0 +1,139 @@
+.surveysContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.surveysTitle {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #102a56;
+  font-size: 36px;
+}
+
+/* Grid containing all cards */
+.surveyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* Individual card */
+.surveyCard {
+  background: white;
+  border: 1px solid #dce3ec;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card hover effect */
+.surveyCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Top section */
+.surveyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.organisationLabel {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #718096;
+}
+
+.organisationName {
+  margin: 0;
+  font-size: 16px;
+  color: #14284b;
+}
+
+/* Open badge */
+.surveyStatus {
+  background: #dcfce7;
+  color: #16834b;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Survey title */
+.surveyName {
+  margin: 0 0 10px;
+  color: #102a56;
+  font-size: 22px;
+}
+
+/* Description */
+.surveyDescription {
+  color: #5f6f85;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Created / Updated section */
+.surveyDetails {
+  display: flex;
+  gap: 50px;
+  padding: 16px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+
+.surveyDetails div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.surveyDetails span {
+  font-size: 13px;
+  color: #718096;
+}
+
+.surveyDetails strong {
+  font-size: 14px;
+  color: #263b5b;
+}
+
+/* Button */
+.takeSurveyButton {
+  width: 100%;
+  padding: 12px 20px;
+  background: #0878e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.takeSurveyButton:hover {
+  background: #0565c5;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .surveyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .surveysTitle {
+    font-size: 28px;
+  }
+
+  .surveyCard {
+    padding: 20px;
+  }
+}
+

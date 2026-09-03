@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getForms } from '../services/umbraco'
 
+import styles from './Survey.module.css'
+
 type Survey = {
   id: string
   name: string
@@ -29,48 +31,73 @@ export default function SurveyList() {
   }
 
   return (
-    <div>
-      <br/>
-      <h1 className="text-center">Available Surveys</h1>
-      <br/>
 
+<div className={styles.surveysContainer}>
 
+  <h1 className={styles.surveysTitle}>Available Surveys</h1>
 
-  <table className="table table-striped table-bordered">
-  <thead>
-    <tr>
-      <th>Survey Name</th>
-      <th>Created By</th>
-      <th>Created</th>
-      <th>Updated</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
+  <div className={styles.surveyGrid}>
 
-  <tbody>
-    {surveys.map(survey => (
-      <tr key={survey.id}>
-        <td>{survey.name}</td>
-        <td>John Doe</td>
-        <td>
-          {new Date(survey.created).toLocaleDateString()}
-        </td>
-        <td>
-          {new Date(survey.updated).toLocaleDateString()}
-        </td>
-        <td>
-          <button
-            className="btn btn-secondary"
-            onClick={() => openSurvey(survey.id)}
-          >
-            Take Survey
-          </button>
-        </td>
-      </tr>
+    {surveys.map((survey) => (
+      <div className={styles.surveyCard} key={survey.id}>
+
+        <div className={styles.surveyHeader}>
+          <div>
+            <p className={styles.organisationLabel}>Created By</p>
+            <h3 className={styles.organisationName}>Organisation Name</h3>
+          </div>
+
+          <span className={styles.surveyStatus}>Open</span>
+        </div>
+
+        <h2 className={styles.surveyName}>
+          {survey.name}
+        </h2>
+
+        <p className={styles.surveyDescription}>
+          Complete this survey and provide your feedback.
+          Your response helps improve our services.
+        </p>
+
+        <div className={styles.surveyDetails}>
+
+          <div>
+            <span>Recipient</span>
+            <strong>
+              patients
+            </strong>
+          </div>
+
+          <div>
+            <span>Created</span>
+            <strong>
+              {new Date(survey.created).toLocaleDateString()}
+            </strong>
+          </div>
+
+          <div>
+            <span>Updated</span>
+            <strong>
+              {new Date(survey.updated).toLocaleDateString()}
+            </strong>
+          </div>
+
+        </div>
+
+        <button
+          className={styles.takeSurveyButton}
+          onClick={() => openSurvey(survey.id)}
+        >
+          Take Survey →
+        </button>
+
+      </div>
     ))}
-  </tbody>
-</table>
-    </div>
+
+  </div>
+
+</div>
+
   )
 }
 
