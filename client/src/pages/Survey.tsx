@@ -34,7 +34,10 @@ export default function SurveyList() {
 
 <div className={styles.surveysContainer}>
 
-  <h1 className={styles.surveysTitle}>Available Surveys</h1>
+  <div className={styles.surveysTitleBox}>
+    <h1>Available Surveys</h1>
+   
+  </div>
 
   <div className={styles.surveyGrid}>
 
