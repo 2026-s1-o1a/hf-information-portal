@@ -39,6 +39,29 @@ export default function SurveyList() {
    
   </div>
 
+ <div className={styles.searchForm}>
+  <div className={styles.searchGroup}>
+    <input
+      type="text"
+      placeholder="Search surveys..."
+    />
+
+    <button className={styles.searchButton}>
+      Search
+    </button>
+  </div>
+</div>
+
+<div className={styles.categoryButtons}>
+  <button className={`${styles.categoryButton} ${styles.active}`}>
+  All
+</button>
+  <button className={styles.categoryButton}>Heart Disease</button>
+  <button className={styles.categoryButton}>Education</button>
+  <button className={styles.categoryButton}>Nutrition</button>
+  <button className={styles.categoryButton}>Physical Wellbeing</button>
+</div>
+
   <div className={styles.surveyGrid}>
 
     {surveys.map((survey) => (
